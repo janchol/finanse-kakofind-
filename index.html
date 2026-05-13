@@ -349,7 +349,7 @@ function renderPayments(){
     tr.appendChild(h("td",{},editableCell(p.status,v=>{state.payments=state.payments.map(x=>x.id===p.id?{...x,status:v}:x);saveToFirebase();toast("Zapisano");render();},{options:[{v:"oczekujacy",l:"Oczekuje"},{v:"nadchodzacy",l:"Nadchodzi"},{v:"oplacony",l:"Opłacony"}]})));
     const acts=h("td",{});const btns=h("div",{style:{display:"flex",gap:4}});
     if(p.status!=="oplacony"){const ok=h("button",{style:{background:"#001a0a",color:"#00C851",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}},"✓");ok.onclick=()=>{state.payments=state.payments.map(x=>x.id===p.id?{...x,status:"oplacony"}:x);saveToFirebase();toast("Opłacone ✓");render();};btns.appendChild(ok);}
-    const del=h("button",{style:{background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}},"✕");del.onclick=()=>{state.payments=state.payments.filter(x=>x.id!==p.id);saveToFirebase();toast("Usunięto");render();};btns.appendChild(del);acts.appendChild(btns);tr.appendChild(acts);tbody.appendChild(tr);
+    const del=h("button",{style:{background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}},"✕");del.onclick=()=>confirmDelete(`Usunąć płatność ${fmt(p.amount)} — ${clientMap()[p.clientId]?.name||"?"}?`,()=>{state.payments=state.payments.filter(x=>x.id!==p.id);saveToFirebase();toast("Usunięto");render();});btns.appendChild(del);acts.appendChild(btns);tr.appendChild(acts);tbody.appendChild(tr);
   });
   tbl.appendChild(tbody);wrap.appendChild(tbl);el.appendChild(wrap);return el;
 }
@@ -377,7 +377,7 @@ function renderClients(){
     const sr=h("div",{style:{borderTop:"1px solid #1e1e1e",paddingTop:10,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}});
     [{l:"Opłacone",v:fmt(tP),c:"#00C851"},{l:"Oczekuje",v:fmt(tPn),c:"#FFB300"}].forEach(s=>sr.appendChild(h("div",{},h("div",{style:{fontSize:10,color:"#555",marginBottom:2,textTransform:"uppercase",letterSpacing:1}},s.l),h("div",{style:{fontWeight:800,color:s.c,fontFamily:"'Bebas Neue',sans-serif"}},s.v))));
     card.appendChild(sr);
-    const del=h("button",{style:{width:"100%",background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"6px",fontSize:12,cursor:"pointer"}},"Usuń klienta");del.onclick=()=>{state.clients=state.clients.filter(x=>x.id!==c.id);saveToFirebase();toast("Usunięto");render();};card.appendChild(del);grid.appendChild(card);
+    const del=h("button",{style:{width:"100%",background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"6px",fontSize:12,cursor:"pointer"}},"Usuń klienta");del.onclick=()=>confirmDelete(`Usunąć klienta "${c.name}"?\nWszystkie jego płatności pozostaną w systemie.`,()=>{state.clients=state.clients.filter(x=>x.id!==c.id);saveToFirebase();toast("Usunięto");render();});card.appendChild(del);grid.appendChild(card);
   });el.appendChild(grid);return el;
 }
 
@@ -402,7 +402,7 @@ function renderCosts(){
     tr.appendChild(h("td",{style:{fontWeight:800,fontFamily:"'Bebas Neue',sans-serif"}},editableCell(c.amount,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,amount:+v}:x);saveToFirebase();toast("Zapisano");render();},{type:"number",color:"#E60000",w:70})));
     tr.appendChild(h("td",{style:{color:"#555",fontSize:12}},editableCell(c.date,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,date:v}:x);saveToFirebase();toast("Zapisano");render();},{w:100})));
     tr.appendChild(h("td",{},editableCell(c.recurring?"cykliczny":"jednorazowy",v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,recurring:v==="cykliczny"}:x);saveToFirebase();toast("Zapisano");render();},{options:[{v:"cykliczny",l:"🔄 Cykliczny"},{v:"jednorazowy",l:"Jednorazowy"}]})));
-    const del=h("button",{style:{background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}},"✕");del.onclick=()=>{state.costs=state.costs.filter(x=>x.id!==c.id);saveToFirebase();toast("Usunięto");render();};tr.appendChild(h("td",{},del));tbody.appendChild(tr);
+    const del=h("button",{style:{background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}},"✕");del.onclick=()=>confirmDelete(`Usunąć koszt "${c.name}" (${fmt(c.amount)})?`,()=>{state.costs=state.costs.filter(x=>x.id!==c.id);saveToFirebase();toast("Usunięto");render();});tr.appendChild(h("td",{},del));tbody.appendChild(tr);
   });
   tbl.appendChild(tbody);wrap.appendChild(tbl);el.appendChild(wrap);return el;
 }
@@ -561,6 +561,12 @@ function render(){
   });
   nav.appendChild(tabsDiv);
   const rb=h("div",{style:{display:"flex",gap:6,marginLeft:"auto",alignItems:"center"}});
+  const backupBtn=h("button",{className:"btn-ghost",style:{fontSize:11,padding:"5px 10px"}},"💾 Backup");
+  backupBtn.onclick=downloadBackup;
+  rb.appendChild(backupBtn);
+  const importBtn=h("button",{className:"btn-ghost",style:{fontSize:11,padding:"5px 10px"}},"📥 Import");
+  importBtn.onclick=importBackup;
+  rb.appendChild(importBtn);
   const copyBtn=h("button",{className:"btn-ghost",style:{fontSize:11,padding:"5px 10px"}},"🔔 Kopiuj");
   copyBtn.onclick=()=>{
     const ov=state.payments.filter(p=>p.status==="oczekujacy"&&dU(p.date)<0);
@@ -612,6 +618,69 @@ function render(){
     state.toasts.forEach(t=>{const ok=t.type!=="error";tc.appendChild(h("div",{className:"toast",style:{background:ok?"#001a08":"#1a0000",border:`1px solid ${ok?"#00C85155":"#FF444466"}`,color:ok?"#00C851":"#FF6666"}},ok?"✓ ":"⚠ ",t.msg));});
     app.appendChild(tc);
   }
+}
+
+// ── CONFIRM DELETE ─────────────────────────────────────────────────────────
+function confirmDelete(msg, onConfirm) {
+  const bg = h("div", {className:"modal-bg"});
+  const box = h("div", {style:{background:"#181818",border:"1px solid #3a0000",borderTop:"3px solid #E60000",borderRadius:14,padding:24,width:"100%",maxWidth:360,textAlign:"center"}});
+  box.onclick = e => e.stopPropagation();
+  box.appendChild(h("div",{style:{fontSize:28,marginBottom:12}},"🗑️"));
+  box.appendChild(h("div",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:18,letterSpacing:1.5,marginBottom:8}},"POTWIERDZENIE USUNIĘCIA"));
+  box.appendChild(h("div",{style:{fontSize:13,color:"#aaa",marginBottom:20,lineHeight:1.5}},msg));
+  const btns = h("div",{style:{display:"flex",gap:10,justifyContent:"center"}});
+  const cancel = h("button",{className:"btn-ghost",style:{padding:"10px 20px"}},"Anuluj");
+  cancel.onclick = () => bg.remove();
+  const confirm = h("button",{style:{background:"#E60000",color:"#fff",border:"none",borderRadius:8,padding:"10px 20px",fontWeight:700,fontSize:13,cursor:"pointer",fontFamily:"inherit"}},"Tak, usuń");
+  confirm.onclick = () => { bg.remove(); onConfirm(); };
+  btns.appendChild(cancel); btns.appendChild(confirm);
+  box.appendChild(btns); bg.appendChild(box);
+  document.getElementById("app").appendChild(bg);
+}
+
+// ── BACKUP ─────────────────────────────────────────────────────────────────
+function downloadBackup() {
+  const data = {
+    exportDate: new Date().toISOString(),
+    clients: state.clients,
+    payments: state.payments,
+    costs: state.costs
+  };
+  const json = JSON.stringify(data, null, 2);
+  const blob = new Blob([json], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = `affiliatedesk-backup-${new Date().toISOString().slice(0,10)}.json`;
+  a.click();
+  toast("Backup pobrany ✓");
+}
+
+function importBackup() {
+  const inp = document.createElement("input");
+  inp.type = "file"; inp.accept = ".json";
+  inp.onchange = e => {
+    const file = e.target.files[0]; if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if(!data.clients || !data.payments || !data.costs) { toast("Nieprawidłowy plik backup","error"); return; }
+        confirmDelete(
+          `Wgrać backup z ${data.exportDate ? new Date(data.exportDate).toLocaleDateString("pl-PL") : "?"}?\nNadpisze wszystkie obecne dane!`,
+          () => {
+            state.clients = data.clients;
+            state.payments = data.payments;
+            state.costs = data.costs;
+            saveToFirebase();
+            toast("Backup wgrany ✓");
+            render();
+          }
+        );
+      } catch { toast("Błąd odczytu pliku","error"); }
+    };
+    reader.readAsText(file);
+  };
+  inp.click();
 }
 
 // ── BOOT ───────────────────────────────────────────────────────────────────
