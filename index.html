@@ -1,526 +1,810 @@
 <!DOCTYPE html>
-
 <html lang="pl">
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>AffiliateDes Pro</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.12.7/Recharts.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
-  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  body{background:#0a0a0a;color:#fff;font-family:'DM Sans',sans-serif;}
-  ::-webkit-scrollbar{width:4px;height:4px;}
-  ::-webkit-scrollbar-track{background:#0a0a0a;}
-  ::-webkit-scrollbar-thumb{background:#E60000;border-radius:2px;}
-  select option{background:#1e1e1e;color:#fff;}
-  input[type=date]::-webkit-calendar-picker-indicator{filter:invert(0.4);}
-  input:focus,select:focus{outline:1px solid #E60000;}
-  tr:hover td{background:#141414!important;}
-  @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
-  @keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-  .sk{animation:shake .4s ease;}
-  .fi{animation:fi .35s ease;}
-  @media(max-width:640px){
-    #dn{display:none!important;}
-    #mb{display:flex!important;}
-    .g4{grid-template-columns:1fr 1fr!important;}
-    .g3{grid-template-columns:1fr 1fr!important;}
-    .g2{grid-template-columns:1fr!important;}
-    .tsx{overflow-x:auto;}
-  }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:#0a0a0a;color:#fff;font-family:'DM Sans',sans-serif;min-height:100vh;}
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:#0a0a0a;}
+::-webkit-scrollbar-thumb{background:#E60000;border-radius:2px;}
+input,select,button{font-family:inherit;}
+input:focus,select:focus{outline:1px solid #E60000;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
+@keyframes fi{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.shake{animation:shake .4s ease;}
+.fi{animation:fi .35s ease;}
+.nav-tabs{display:flex;flex:1;overflow-x:auto;}
+.mob-menu{display:none;position:fixed;top:48px;left:0;right:0;background:#181818;border-bottom:1px solid #222;z-index:199;padding:8px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;min-width:560px;}
+th{padding:10px 12px;text-align:left;font-size:10px;color:#555;text-transform:uppercase;letter-spacing:1.2px;font-weight:700;white-space:nowrap;background:#0a0a0a;}
+td{padding:10px 12px;border-top:1px solid #1e1e1e;font-size:13px;}
+tr:hover td{background:#141414;}
+.badge{display:inline-flex;align-items:center;gap:4px;border-radius:6px;padding:2px 9px;font-size:11px;font-weight:700;}
+.badge-dot{width:5px;height:5px;border-radius:50%;display:inline-block;}
+.btn-red{background:#E60000;color:#fff;border:none;border-radius:8px;padding:10px 18px;font-weight:700;font-size:13px;cursor:pointer;}
+.btn-ghost{background:none;border:1px solid #2a2a2a;color:#aaa;border-radius:8px;padding:8px 13px;cursor:pointer;font-size:12px;}
+.card{background:#111;border:1px solid #222;border-radius:12px;padding:18px;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px);}
+.modal-box{background:#181818;border:1px solid #2a2a2a;border-top:3px solid #E60000;border-radius:14px;padding:24px;width:100%;max-width:440px;max-height:90vh;overflow-y:auto;}
+.field-label{display:block;font-size:10px;color:#555;margin-bottom:5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:600;}
+.field-input{width:100%;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:8px;padding:9px 11px;color:#fff;font-size:13px;}
+.field-select{width:100%;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:8px;padding:9px 11px;color:#fff;font-size:13px;}
+.field-select option{background:#1e1e1e;}
+.editable{cursor:text;border-bottom:1px dashed #2a2a2a;padding-bottom:1px;display:inline-block;}
+.editable:hover{border-bottom-color:#E60000;}
+.edit-input{background:#1e1e1e;border:1px solid #E60000;border-radius:5px;color:#fff;font-size:13px;padding:3px 7px;font-family:inherit;}
+.edit-select{background:#1e1e1e;border:1px solid #E60000;border-radius:5px;color:#fff;font-size:13px;padding:2px 6px;font-family:inherit;}
+.toast-container{position:fixed;bottom:24px;right:24px;z-index:2000;display:flex;flex-direction:column;gap:8px;}
+.toast{border-radius:10px;padding:11px 16px;font-size:13px;font-weight:600;max-width:300px;}
+.filter-btn{border-radius:6px;padding:5px 11px;font-size:12px;cursor:pointer;font-family:inherit;border:1px solid;}
+@media(max-width:640px){
+  .nav-tabs{display:none;}
+  .mob-btn{display:flex!important;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .two-col{grid-template-columns:1fr;}
+  .three-col{grid-template-columns:1fr 1fr;}
+}
 </style>
 </head>
 <body>
-<div id="root"></div>
-<script type="text/babel">
-const {useState,useMemo,useEffect,useCallback,useRef} = React;
-const {AreaChart,Area,BarChart,Bar,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,Legend} = Recharts;
+<div id="app"></div>
+<script>
+// ── dane startowe ──────────────────────────────────────────────────────────
+const PASSWORD = "Kako#9Rx!mZ4@vQ";
+const IC=[{id:1,name:"TechGear Pro",type:"prowizja",rate:12,status:"aktywny",notes:"12% od sprzedaży"},{id:2,name:"FashionHub",type:"prowizja",rate:8,status:"aktywny",notes:"8% od sprzedaży"},{id:3,name:"NutriBrand",type:"prowizja",rate:15,status:"aktywny",notes:"15% od sprzedaży"},{id:4,name:"StyleCo",type:"miesieczny",rate:2400,status:"aktywny",notes:"Stała miesięczna"},{id:5,name:"GadgetWorld",type:"miesieczny",rate:1800,status:"aktywny",notes:"Częściowo w produktach"},{id:6,name:"BeautyLine",type:"miesieczny",rate:1200,status:"oczekujacy",notes:"Negocjacje"}];
+const IP=[{id:1,clientId:1,amount:8400,date:"2026-04-15",status:"oplacony",type:"gotowka",note:"Kwiecień"},{id:2,clientId:2,amount:3200,date:"2026-04-22",status:"oplacony",type:"gotowka",note:"Kwiecień"},{id:3,clientId:4,amount:2400,date:"2026-05-01",status:"oplacony",type:"gotowka",note:"Maj"},{id:4,clientId:5,amount:900,date:"2026-05-01",status:"oplacony",type:"produkt",note:"Słuchawki"},{id:5,clientId:5,amount:900,date:"2026-05-01",status:"oplacony",type:"gotowka",note:"Reszta maja"},{id:6,clientId:3,amount:6750,date:"2026-05-10",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:7,clientId:1,amount:9100,date:"2026-05-15",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:8,clientId:2,amount:2900,date:"2026-05-22",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:9,clientId:4,amount:2400,date:"2026-06-01",status:"nadchodzacy",type:"gotowka",note:"Czerwiec"},{id:10,clientId:6,amount:1200,date:"2026-06-01",status:"nadchodzacy",type:"gotowka",note:"Start"}];
+const ICO=[{id:1,name:"Hosting & domeny",amount:180,category:"tech",date:"2026-05-01",recurring:true},{id:2,name:"Narzędzia marketingowe",amount:320,category:"tech",date:"2026-05-01",recurring:true},{id:3,name:"Obsługa księgowa",amount:450,category:"uslugi",date:"2026-05-05",recurring:true},{id:4,name:"Reklama własna",amount:600,category:"marketing",date:"2026-05-08",recurring:false},{id:5,name:"Sprzęt biurowy",amount:240,category:"inne",date:"2026-04-20",recurring:false}];
+const HIST=[{month:"Sty",revenue:19800,costs:1200},{month:"Lut",revenue:22600,costs:1350},{month:"Mar",revenue:17400,costs:1550},{month:"Kwi",revenue:25200,costs:1490}];
 
-const PASSWORD = “Kako#9Rx!mZ4@vQ”;
-
-const C = {
-red:”#E60000”,green:”#00C851”,amber:”#FFB300”,blue:”#4DA6FF”,purple:”#BB86FC”,
-bg0:”#0a0a0a”,bg1:”#111111”,bg2:”#181818”,bg3:”#1e1e1e”,
-border:”#222222”,b2:”#2a2a2a”,text:”#FFFFFF”,muted:”#AAAAAA”,dim:”#555555”,
-};
-
-const IC=[{id:1,name:“TechGear Pro”,type:“prowizja”,rate:12,status:“aktywny”,notes:“12% od sprzedaży”},{id:2,name:“FashionHub”,type:“prowizja”,rate:8,status:“aktywny”,notes:“8% od sprzedaży”},{id:3,name:“NutriBrand”,type:“prowizja”,rate:15,status:“aktywny”,notes:“15% od sprzedaży”},{id:4,name:“StyleCo”,type:“miesieczny”,rate:2400,status:“aktywny”,notes:“Stała miesięczna”},{id:5,name:“GadgetWorld”,type:“miesieczny”,rate:1800,status:“aktywny”,notes:“Częściowo w produktach”},{id:6,name:“BeautyLine”,type:“miesieczny”,rate:1200,status:“oczekujacy”,notes:“Negocjacje”}];
-const IP=[{id:1,clientId:1,amount:8400,date:“2026-04-15”,status:“oplacony”,type:“gotowka”,note:“Kwiecień”},{id:2,clientId:2,amount:3200,date:“2026-04-22”,status:“oplacony”,type:“gotowka”,note:“Kwiecień”},{id:3,clientId:4,amount:2400,date:“2026-05-01”,status:“oplacony”,type:“gotowka”,note:“Maj”},{id:4,clientId:5,amount:900,date:“2026-05-01”,status:“oplacony”,type:“produkt”,note:“Słuchawki”},{id:5,clientId:5,amount:900,date:“2026-05-01”,status:“oplacony”,type:“gotowka”,note:“Reszta maja”},{id:6,clientId:3,amount:6750,date:“2026-05-10”,status:“oczekujacy”,type:“gotowka”,note:“Maj”},{id:7,clientId:1,amount:9100,date:“2026-05-15”,status:“oczekujacy”,type:“gotowka”,note:“Maj”},{id:8,clientId:2,amount:2900,date:“2026-05-22”,status:“oczekujacy”,type:“gotowka”,note:“Maj”},{id:9,clientId:4,amount:2400,date:“2026-06-01”,status:“nadchodzacy”,type:“gotowka”,note:“Czerwiec”},{id:10,clientId:6,amount:1200,date:“2026-06-01”,status:“nadchodzacy”,type:“gotowka”,note:“Start”}];
-const ICO=[{id:1,name:“Hosting & domeny”,amount:180,category:“tech”,date:“2026-05-01”,recurring:true},{id:2,name:“Narzędzia marketingowe”,amount:320,category:“tech”,date:“2026-05-01”,recurring:true},{id:3,name:“Obsługa księgowa”,amount:450,category:“uslugi”,date:“2026-05-05”,recurring:true},{id:4,name:“Reklama własna”,amount:600,category:“marketing”,date:“2026-05-08”,recurring:false},{id:5,name:“Sprzęt biurowy”,amount:240,category:“inne”,date:“2026-04-20”,recurring:false}];
-const HIST=[{month:“Sty”,revenue:19800,costs:1200},{month:“Lut”,revenue:22600,costs:1350},{month:“Mar”,revenue:17400,costs:1550},{month:“Kwi”,revenue:25200,costs:1490}];
-
-const fmt=n=>new Intl.NumberFormat(“pl-PL”,{style:“currency”,currency:“PLN”,maximumFractionDigits:0}).format(n||0);
-const fmtDate=d=>new Date(d).toLocaleDateString(“pl-PL”,{day:“2-digit”,month:“short”,year:“numeric”});
-const TODAY=new Date(“2026-05-13”);
+// ── helpers ────────────────────────────────────────────────────────────────
+const fmt=n=>new Intl.NumberFormat("pl-PL",{style:"currency",currency:"PLN",maximumFractionDigits:0}).format(n||0);
+const fmtDate=d=>new Date(d).toLocaleDateString("pl-PL",{day:"2-digit",month:"short",year:"numeric"});
+const TODAY=new Date("2026-05-13");
 const dU=d=>Math.ceil((new Date(d)-TODAY)/86400000);
 const uid=()=>Date.now()+Math.random();
-
-const iSt={width:“100%”,background:C.bg3,border:`1px solid ${C.b2}`,borderRadius:8,padding:“9px 11px”,color:C.text,fontSize:13,fontFamily:“inherit”,boxSizing:“border-box”};
-const btnP={background:C.red,color:”#fff”,border:“none”,borderRadius:8,padding:“10px 20px”,fontWeight:700,fontSize:13,cursor:“pointer”,fontFamily:“inherit”};
-const btnG={background:“none”,border:`1px solid ${C.b2}`,color:C.muted,borderRadius:8,padding:“9px 14px”,cursor:“pointer”,fontFamily:“inherit”,fontSize:12};
-
-function EC({value,onSave,type=“text”,options,w=90,color}){
-const [ed,setEd]=useState(false);
-const [v,setV]=useState(value);
-const ref=useRef();
-useEffect(()=>{if(ed&&ref.current)ref.current.focus();},[ed]);
-useEffect(()=>{setV(value);},[value]);
-const save=()=>{setEd(false);if(String(v)!==String(value))onSave(type===“number”?+v:v);};
-const cancel=()=>{setEd(false);setV(value);};
-if(!ed)return <span onClick={()=>setEd(true)} title=“Kliknij aby edytować” style={{cursor:“text”,borderBottom:`1px dashed ${C.b2}`,paddingBottom:1,display:“inline-block”,color:color||“inherit”,minWidth:w}}>{value}</span>;
-if(options)return <select ref={ref} value={v} onChange={e=>setV(e.target.value)} onBlur={save} style={{background:C.bg3,border:`1px solid ${C.red}`,borderRadius:5,color:C.text,fontSize:13,padding:“2px 6px”,fontFamily:“inherit”,outline:“none”}}>{options.map(o=><option key={o.v} value={o.v}>{o.l}</option>)}</select>;
-return <input ref={ref} value={v} type={type===“number”?“number”:“text”} onChange={e=>setV(e.target.value)} onBlur={save} onKeyDown={e=>{if(e.key===“Enter”)save();if(e.key===“Escape”)cancel();}} style={{background:C.bg3,border:`1px solid ${C.red}`,borderRadius:5,color:C.text,fontSize:13,padding:“3px 7px”,fontFamily:“inherit”,outline:“none”,width:w}}/>;
-}
-
-function Badge({s}){
-const m={oplacony:{l:“Opłacony”,bg:”#001a0a”,c:C.green},oczekujacy:{l:“Oczekuje”,bg:”#1a1000”,c:C.amber},nadchodzacy:{l:“Nadchodzi”,bg:”#001020”,c:C.blue},aktywny:{l:“Aktywny”,bg:”#001a0a”,c:C.green},zalegly:{l:“Zaległy”,bg:”#1a0000”,c:”#FF4444”}};
-const x=m[s]||m.oczekujacy;
-return <span style={{background:x.bg,color:x.c,border:`1px solid ${x.c}33`,borderRadius:6,padding:“2px 9px”,fontSize:11,fontWeight:700,display:“inline-flex”,alignItems:“center”,gap:4}}><span style={{width:5,height:5,borderRadius:“50%”,background:x.c,display:“inline-block”}}/>{x.l}</span>;
-}
-
-function Toast({toasts}){return <div style={{position:“fixed”,bottom:24,right:24,zIndex:2000,display:“flex”,flexDirection:“column”,gap:8}}>{toasts.map(t=><div key={t.id} style={{background:t.type===“error”?”#1a0000”:”#001a08”,border:`1px solid ${t.type==="error"?"#FF444466":"#00C85155"}`,color:t.type===“error”?”#FF6666”:C.green,borderRadius:10,padding:“11px 16px”,fontSize:13,fontWeight:600,maxWidth:300}}>{t.type===“error”?“⚠ “:“✓ “}{t.msg}</div>)}</div>;}
-
-function KPI({label,value,sub,accent,icon}){return <div style={{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,padding:“16px 18px”,borderTop:`3px solid ${accent}`,position:“relative”,overflow:“hidden”}}><div style={{position:“absolute”,top:10,right:12,fontSize:18,opacity:.08}}>{icon}</div><div style={{fontSize:10,color:C.dim,marginBottom:6,textTransform:“uppercase”,letterSpacing:1.2,fontWeight:600}}>{label}</div><div style={{fontSize:20,fontWeight:800,color:accent,marginBottom:2,fontFamily:”‘Bebas Neue’,sans-serif”,letterSpacing:1}}>{value}</div><div style={{fontSize:11,color:C.dim}}>{sub}</div></div>;}
-
-const TH=({children})=><th style={{padding:“10px 12px”,textAlign:“left”,fontSize:10,color:C.dim,textTransform:“uppercase”,letterSpacing:1.2,fontWeight:700,whiteSpace:“nowrap”}}>{children}</th>;
-
-function Modal({title,onClose,children}){
-return <div style={{position:“fixed”,inset:0,background:“rgba(0,0,0,0.85)”,zIndex:1000,display:“flex”,alignItems:“center”,justifyContent:“center”,backdropFilter:“blur(6px)”,padding:16}} onClick={onClose}><div style={{background:C.bg2,border:`1px solid ${C.b2}`,borderTop:`3px solid ${C.red}`,borderRadius:14,padding:26,width:“100%”,maxWidth:460,maxHeight:“90vh”,overflowY:“auto”}} onClick={e=>e.stopPropagation()}><div style={{display:“flex”,justifyContent:“space-between”,alignItems:“center”,marginBottom:18}}><h3 style={{margin:0,fontSize:15,fontFamily:”‘Bebas Neue’,sans-serif”,color:C.text,letterSpacing:1.5}}>{title}</h3><button onClick={onClose} style={{background:“none”,border:“none”,color:C.dim,fontSize:20,cursor:“pointer”}}>✕</button></div>{children}</div></div>;
-}
-const Field=({label,children,half})=><div style={{marginBottom:12,...(half?{flex:1}:{})}}><label style={{display:“block”,fontSize:10,color:C.dim,marginBottom:5,letterSpacing:1.2,textTransform:“uppercase”,fontWeight:600}}>{label}</label>{children}</div>;
-const Row=({children})=><div style={{display:“flex”,gap:10}}>{children}</div>;
-function ChartTip({active,payload,label}){if(!active||!payload?.length)return null;return <div style={{background:C.bg2,border:`1px solid ${C.b2}`,borderRadius:8,padding:“10px 14px”,fontSize:12}}><div style={{color:C.dim,marginBottom:5,fontWeight:700}}>{label}</div>{payload.map((p,i)=><div key={i} style={{color:p.color,marginBottom:2}}>{p.name}: {fmt(p.value)}</div>)}</div>;}
-
-function ReminderBanner({payments,clients}){
-const cm=Object.fromEntries(clients.map(c=>[c.id,c]));
-const ov=payments.filter(p=>p.status===“oczekujacy”&&dU(p.date)<0);
-const ds=payments.filter(p=>p.status===“oczekujacy”&&dU(p.date)>=0&&dU(p.date)<=3);
-if(!ov.length&&!ds.length)return null;
-return <div style={{background:”#120000”,border:`1px solid ${C.red}44`,borderLeft:`3px solid ${C.red}`,borderRadius:10,padding:“12px 16px”,marginBottom:16,display:“flex”,gap:10}}><span style={{fontSize:16,flexShrink:0}}>🔔</span><div>{ov.length>0&&<div style={{color:”#FF6666”,fontSize:13,fontWeight:700,marginBottom:2}}>ZALEGŁE ({ov.length}): {ov.map(p=>`${cm[p.clientId]?.name} ${fmt(p.amount)}`).join(” · “)}</div>}{ds.length>0&&<div style={{color:C.amber,fontSize:12}}>Terminy ≤3 dni: {ds.map(p=>`${cm[p.clientId]?.name} — ${fmt(p.amount)} (${dU(p.date)===0?"DZIŚ!":"za "+dU(p.date)+"d"})`).join(” · “)}</div>}</div></div>;
-}
-
-function LoginScreen({onLogin}){
-const [pw,setPw]=useState(””);
-const [show,setShow]=useState(false);
-const [err,setErr]=useState(false);
-const [shake,setShake]=useState(false);
-const tryLogin=()=>{
-if(pw===PASSWORD){onLogin();}
-else{setErr(true);setShake(true);setPw(””);setTimeout(()=>setShake(false),500);}
-};
-return(
-<div style={{minHeight:“100vh”,background:C.bg0,display:“flex”,alignItems:“center”,justifyContent:“center”,padding:16}}>
-<div className=“fi” style={{width:“100%”,maxWidth:360}}>
-<div style={{textAlign:“center”,marginBottom:32}}>
-<div style={{width:50,height:50,background:C.red,borderRadius:12,display:“inline-flex”,alignItems:“center”,justifyContent:“center”,fontSize:22,fontWeight:900,color:”#fff”,fontFamily:”‘Bebas Neue’,sans-serif”,marginBottom:12}}>A</div>
-<div><span style={{fontFamily:”‘Bebas Neue’,sans-serif”,fontSize:24,letterSpacing:3}}>AFFILIATE</span><span style={{fontFamily:”‘Bebas Neue’,sans-serif”,fontSize:24,letterSpacing:3,color:C.red}}>DESK</span></div>
-<div style={{fontSize:11,color:C.dim,marginTop:3,letterSpacing:1}}>PANEL FINANSOWY · PRO</div>
-</div>
-<div className={shake?“sk”:””} style={{background:C.bg1,border:`1px solid ${C.border}`,borderTop:`3px solid ${C.red}`,borderRadius:14,padding:26}}>
-<div style={{fontSize:11,color:C.dim,marginBottom:18,letterSpacing:1,textTransform:“uppercase”,fontWeight:600}}>🔒 Wymagane hasło dostępu</div>
-<div style={{marginBottom:12}}>
-<label style={{display:“block”,fontSize:10,color:C.dim,marginBottom:5,letterSpacing:1.2,textTransform:“uppercase”,fontWeight:600}}>Hasło</label>
-<div style={{position:“relative”}}>
-<input type={show?“text”:“password”} value={pw} onChange={e=>{setPw(e.target.value);setErr(false);}} onKeyDown={e=>e.key===“Enter”&&tryLogin()} placeholder=“Wpisz hasło…” autoFocus style={{…iSt,paddingRight:44,borderColor:err?C.red:C.b2,fontSize:15}}/>
-<button onClick={()=>setShow(s=>!s)} style={{position:“absolute”,right:12,top:“50%”,transform:“translateY(-50%)”,background:“none”,border:“none”,color:C.dim,cursor:“pointer”,fontSize:15,padding:4}}>{show?“🙈”:“👁”}</button>
-</div>
-</div>
-{err&&<div style={{color:”#FF4444”,fontSize:12,marginBottom:10,fontWeight:600}}>⚠ Nieprawidłowe hasło</div>}
-<button onClick={tryLogin} style={{…btnP,width:“100%”,padding:13,fontSize:14,letterSpacing:1}}>ZALOGUJ SIĘ →</button>
-</div>
-</div>
-</div>
-);
-}
-
-function App(){
-const [loggedIn,setLoggedIn]=useState(false);
-if(!loggedIn)return <LoginScreen onLogin={()=>setLoggedIn(true)}/>;
-return <Dashboard onLogout={()=>setLoggedIn(false)}/>;
-}
-
-function Dashboard({onLogout}){
-const [tab,setTab]=useState(“dashboard”);
-const [mob,setMob]=useState(false);
-const [clients,setClients]=useState(IC);
-const [payments,setPayments]=useState(IP);
-const [costs,setCosts]=useState(ICO);
-const [modal,setModal]=useState(null);
-const [form,setForm]=useState({});
-const [toasts,setToasts]=useState([]);
-const [pf,setPf]=useState(“wszystkie”);
-
-const toast=useCallback((msg,type=“ok”)=>{
-const id=uid();
-setToasts(t=>[…t,{id,msg,type}]);
-setTimeout(()=>setToasts(t=>t.filter(x=>x.id!==id)),2800);
-},[]);
-
-const cm=useMemo(()=>Object.fromEntries(clients.map(c=>[c.id,c])),[clients]);
-const paid=payments.filter(p=>p.status===“oplacony”);
-const pend=payments.filter(p=>p.status===“oczekujacy”);
-const totR=paid.reduce((s,p)=>s+p.amount,0);
-const totP=pend.reduce((s,p)=>s+p.amount,0);
-const totC=costs.reduce((s,c)=>s+c.amount,0);
-const net=totR-totC;
-const sp={a:net*.5,b:net*.25,c:net*.25};
-
-const chartD=useMemo(()=>[…HIST.map(m=>({…m,net:m.revenue-m.costs})),{month:“Maj”,revenue:totR,costs:totC,net}],[totR,totC,net]);
-
-const filtP=useMemo(()=>{
-const s=[…payments].sort((a,b)=>new Date(b.date)-new Date(a.date));
-if(pf===“wszystkie”)return s;
-if(pf===“zaległe”)return s.filter(p=>p.status===“oczekujacy”&&dU(p.date)<0);
-return s.filter(p=>p.status===pf);
-},[payments,pf]);
-
-const editP=(id,k,v)=>{setPayments(ps=>ps.map(p=>p.id===id?{…p,[k]:v}:p));toast(“Zapisano”);};
-const editC=(id,k,v)=>{setCosts(cs=>cs.map(c=>c.id===id?{…c,[k]:v}:c));toast(“Zapisano”);};
-const editCl=(id,k,v)=>{setClients(cs=>cs.map(c=>c.id===id?{…c,[k]:v}:c));toast(“Zapisano”);};
-
-const oM=(type,data={})=>{setModal(type);setForm({…data});};
-const cM=()=>{setModal(null);setForm({});};
-const fv=k=>e=>setForm(p=>({…p,[k]:e.target.value}));
-
-const savePay=()=>{
-if(!form.clientId||!form.amount||!form.date){toast(“Wypełnij wymagane pola”,“error”);return;}
-const r={id:form.id||uid(),clientId:+form.clientId,amount:+form.amount,date:form.date,status:form.status||“oczekujacy”,type:form.type||“gotowka”,note:form.note||””};
-setPayments(ps=>form.id?ps.map(p=>p.id===form.id?r:p):[…ps,r]);
-toast(form.id?“Zaktualizowano”:“Dodano”);cM();
-};
-const saveCost=()=>{
-if(!form.name||!form.amount){toast(“Wypełnij wymagane pola”,“error”);return;}
-const r={id:form.id||uid(),name:form.name,amount:+form.amount,category:form.category||“inne”,date:form.date||TODAY.toISOString().slice(0,10),recurring:form.recurring===“tak”};
-setCosts(cs=>form.id?cs.map(c=>c.id===form.id?r:c):[…cs,r]);
-toast(form.id?“Zaktualizowano”:“Dodano”);cM();
-};
-const saveCl=()=>{
-if(!form.name){toast(“Podaj nazwę”,“error”);return;}
-const r={id:form.id||uid(),name:form.name,type:form.type||“miesieczny”,rate:+form.rate||0,status:form.status||“aktywny”,notes:form.notes||””};
-setClients(cs=>form.id?cs.map(c=>c.id===form.id?r:c):[…cs,r]);
-toast(form.id?“Zaktualizowano”:“Dodano”);cM();
+const h=(tag,props,...children)=>{
+  const el=document.createElement(tag);
+  if(props)Object.entries(props).forEach(([k,v])=>{
+    if(k==="style"&&typeof v==="object")Object.assign(el.style,v);
+    else if(k.startsWith("on"))el.addEventListener(k.slice(2).toLowerCase(),v);
+    else if(k==="className")el.className=v;
+    else el.setAttribute(k,v);
+  });
+  children.flat(Infinity).forEach(c=>{
+    if(c==null||c===false)return;
+    el.appendChild(typeof c==="string"||typeof c==="number"?document.createTextNode(c):c);
+  });
+  return el;
 };
 
-const markPaid=id=>{setPayments(ps=>ps.map(p=>p.id===id?{…p,status:“oplacony”}:p));toast(“Opłacone ✓”);};
-const delP=id=>{setPayments(ps=>ps.filter(p=>p.id!==id));toast(“Usunięto”);};
-const delC=id=>{setCosts(cs=>cs.filter(c=>c.id!==id));toast(“Usunięto”);};
-const delCl=id=>{setClients(cs=>cs.filter(c=>c.id!==id));toast(“Usunięto”);};
-
-const copyRem=()=>{
-const ov=payments.filter(p=>p.status===“oczekujacy”&&dU(p.date)<0);
-const ds=payments.filter(p=>p.status===“oczekujacy”&&dU(p.date)>=0&&dU(p.date)<=7);
-const txt=[“📊 PRZYPOMNIENIA”,“Data: “+fmtDate(TODAY.toISOString().slice(0,10)),””,ov.length?“🔴 ZALEGŁE:”:null,…ov.map(p=>`  • ${cm[p.clientId]?.name} — ${fmt(p.amount)} (${fmtDate(p.date)})`),ds.length?”\n🟡 NADCHODZĄCE:”:null,…ds.map(p=>`  • ${cm[p.clientId]?.name} — ${fmt(p.amount)} (za ${dU(p.date)}d)`)].filter(Boolean).join(”\n”);
-navigator.clipboard.writeText(txt).then(()=>toast(“Skopiowano 📋”));
+// ── state ──────────────────────────────────────────────────────────────────
+let state={
+  loggedIn:false,
+  tab:"dashboard",
+  clients:JSON.parse(JSON.stringify(IC)),
+  payments:JSON.parse(JSON.stringify(IP)),
+  costs:JSON.parse(JSON.stringify(ICO)),
+  modal:null,
+  form:{},
+  pf:"wszystkie",
+  mob:false,
+  toasts:[],
 };
 
-const odC=payments.filter(p=>p.status===“oczekujacy”&&dU(p.date)<0).length;
-const statusOpts=[{v:“oczekujacy”,l:“Oczekuje”},{v:“nadchodzacy”,l:“Nadchodzi”},{v:“oplacony”,l:“Opłacony”}];
-const typeOpts=[{v:“gotowka”,l:“💳 Przelew”},{v:“produkt”,l:“📦 Produkt”}];
-const catOpts=[{v:“tech”,l:“Tech”},{v:“marketing”,l:“Marketing”},{v:“uslugi”,l:“Usługi”},{v:“inne”,l:“Inne”}];
-const clStatusOpts=[{v:“aktywny”,l:“Aktywny”},{v:“oczekujacy”,l:“Oczekujący”}];
-const TABS=[{id:“dashboard”,icon:“◈”,label:“Przegląd”},{id:“payments”,icon:“◎”,label:“Płatności”},{id:“clients”,icon:“◉”,label:“Klienci”},{id:“costs”,icon:“◌”,label:“Koszty”},{id:“split”,icon:“◑”,label:“Podział”},{id:“analytics”,icon:“◐”,label:“Analizy”}];
-
-return(
-<div style={{minHeight:“100vh”,background:C.bg0,color:C.text}}>
-<nav style={{background:”#0d0d0d”,borderBottom:`1px solid ${C.border}`,padding:“0 18px”,display:“flex”,alignItems:“center”,position:“sticky”,top:0,zIndex:200}}>
-<div style={{marginRight:14,padding:“10px 0”,flexShrink:0,display:“flex”,alignItems:“center”,gap:7}}>
-<div style={{width:24,height:24,background:C.red,borderRadius:5,display:“flex”,alignItems:“center”,justifyContent:“center”,fontWeight:900,fontSize:13,color:”#fff”,fontFamily:”‘Bebas Neue’,sans-serif”}}>A</div>
-<span style={{fontFamily:”‘Bebas Neue’,sans-serif”,fontSize:17,letterSpacing:2}}>AFFILIATE<span style={{color:C.red}}>DESK</span></span>
-<span style={{background:C.red,fontSize:8,fontWeight:800,padding:“1px 5px”,borderRadius:3}}>PRO</span>
-</div>
-<div id=“dn” style={{display:“flex”,flex:1}}>
-{TABS.map(t=>(
-<button key={t.id} onClick={()=>setTab(t.id)} style={{background:tab===t.id?”#150000”:“none”,border:“none”,color:tab===t.id?C.red:C.dim,padding:“14px 11px”,cursor:“pointer”,fontSize:11,fontWeight:700,fontFamily:“inherit”,borderBottom:tab===t.id?`2px solid ${C.red}`:“2px solid transparent”,display:“flex”,alignItems:“center”,gap:4,whiteSpace:“nowrap”}}>
-{t.icon} {t.label}
-{t.id===“payments”&&odC>0&&<span style={{background:C.red,color:”#fff”,borderRadius:10,padding:“1px 5px”,fontSize:10,fontWeight:800}}>{odC}</span>}
-</button>
-))}
-</div>
-<div style={{display:“flex”,gap:6,marginLeft:“auto”,alignItems:“center”}}>
-<button onClick={copyRem} style={{…btnG,fontSize:11,padding:“5px 10px”}}>🔔 Kopiuj</button>
-<button onClick={onLogout} style={{…btnG,fontSize:11,padding:“5px 10px”,borderColor:”#3a0000”,color:”#FF4444”}}>🔓 Wyloguj</button>
-</div>
-<button id=“mb” onClick={()=>setMob(o=>!o)} style={{marginLeft:8,background:“none”,border:`1px solid ${C.b2}`,color:C.text,borderRadius:8,padding:“7px 11px”,cursor:“pointer”,display:“none”,alignItems:“center”,fontSize:13,fontWeight:700}}>☰</button>
-</nav>
-
-```
-  {mob&&(
-    <div style={{background:C.bg2,borderBottom:`1px solid ${C.border}`,position:"fixed",top:50,left:0,right:0,zIndex:199,padding:10}}>
-      {TABS.map(t=><button key={t.id} onClick={()=>{setTab(t.id);setMob(false);}} style={{display:"block",width:"100%",background:tab===t.id?"#150000":"none",border:"none",color:tab===t.id?C.red:C.muted,padding:"11px 14px",textAlign:"left",cursor:"pointer",fontSize:13,fontFamily:"inherit",borderRadius:8,fontWeight:700}}>{t.icon} {t.label}</button>)}
-      <div style={{borderTop:`1px solid ${C.border}`,marginTop:8,paddingTop:8,display:"flex",gap:8}}>
-        <button onClick={copyRem} style={{...btnG,fontSize:11,padding:"7px 10px"}}>🔔</button>
-        <button onClick={onLogout} style={{...btnG,fontSize:11,padding:"7px 10px",color:"#FF4444"}}>🔓 Wyloguj</button>
-      </div>
-    </div>
-  )}
-
-  <main style={{padding:"18px",maxWidth:1100,margin:"0 auto"}}>
-    <ReminderBanner payments={payments} clients={clients}/>
-    <div style={{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:8,padding:"7px 13px",marginBottom:14,fontSize:11,color:C.dim,display:"flex",alignItems:"center",gap:7}}>
-      <span style={{color:C.red}}>✎</span>
-      <span><b style={{color:C.muted}}>Inline editing:</b> kliknij dowolną wartość → edytuj → Enter lub kliknij poza polem.</span>
-    </div>
-
-    {tab==="dashboard"&&(
-      <div>
-        <h1 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,margin:"0 0 3px",letterSpacing:2}}>PRZEGLĄD — MAJ 2026</h1>
-        <p style={{color:C.dim,margin:"0 0 14px",fontSize:12}}>{clients.filter(c=>c.status==="aktywny").length} aktywnych klientów</p>
-        <div className="g4" style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:14}}>
-          <KPI label="Przychody (opłacone)" value={fmt(totR)} sub={`${paid.length} faktur`} accent={C.green} icon="💰"/>
-          <KPI label="Oczekuje na wpłatę" value={fmt(totP)} sub={`${pend.length} faktur`} accent={C.amber} icon="⏳"/>
-          <KPI label="Koszty operacyjne" value={fmt(totC)} sub={`${costs.length} pozycji`} accent={C.red} icon="📉"/>
-          <KPI label="Zysk netto" value={fmt(net)} sub="50/25/25" accent={C.blue} icon="📈"/>
-        </div>
-        <div className="g2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
-          <div style={{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,padding:18}}>
-            <h3 style={{margin:"0 0 11px",fontSize:11,color:C.dim,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700}}>Najbliższe płatności</h3>
-            {[...payments].filter(p=>p.status!=="oplacony").sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,5).map(p=>{
-              const d=dU(p.date);
-              return <div key={p.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:`1px solid ${C.bg3}`}}>
-                <div><div style={{fontSize:13,fontWeight:600}}>{cm[p.clientId]?.name}</div><div style={{fontSize:11,color:C.dim,marginTop:1}}>{fmtDate(p.date)} · {d<0?<span style={{color:"#FF4444"}}>zaległe {Math.abs(d)}d</span>:d===0?<span style={{color:C.red,fontWeight:800}}>DZIŚ!</span>:<span style={{color:d<=3?C.amber:C.dim}}>za {d}d</span>}</div></div>
-                <div style={{textAlign:"right"}}><div style={{fontWeight:800,fontSize:14,fontFamily:"'Bebas Neue',sans-serif",letterSpacing:1}}>{fmt(p.amount)}</div><Badge s={d<0?"zalegly":p.status}/></div>
-              </div>;
-            })}
-          </div>
-          <div style={{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,padding:18}}>
-            <h3 style={{margin:"0 0 11px",fontSize:11,color:C.dim,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700}}>Podział zysku netto</h3>
-            <div style={{marginBottom:10,padding:"8px 12px",background:C.bg0,borderRadius:8,fontSize:12,color:C.dim,display:"flex",justifyContent:"space-between"}}>
-              <span>{fmt(totR)} − {fmt(totC)}</span><span style={{color:C.blue,fontWeight:800,fontFamily:"'Bebas Neue',sans-serif"}}>{fmt(net)}</span>
-            </div>
-            {[{n:"Wspólnik A",p:"50%",a:sp.a,c:C.red,w:"50%"},{n:"Wspólnik B",p:"25%",a:sp.b,c:C.green,w:"25%"},{n:"Wspólnik C",p:"25%",a:sp.c,c:C.blue,w:"25%"}].map((s,i)=>(
-              <div key={i} style={{marginBottom:10}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}><span style={{fontSize:13}}>{s.n} <span style={{color:C.dim}}>{s.p}</span></span><span style={{fontWeight:800,color:s.c,fontFamily:"'Bebas Neue',sans-serif"}}>{fmt(s.a)}</span></div>
-                <div style={{height:4,background:C.bg3,borderRadius:2}}><div style={{height:"100%",background:s.c,borderRadius:2,width:s.w}}/></div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    )}
-
-    {tab==="payments"&&(
-      <div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:10}}>
-          <div><h2 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:0,letterSpacing:2}}>PŁATNOŚCI</h2><p style={{color:C.dim,margin:"2px 0 0",fontSize:12}}>{payments.length} łącznie</p></div>
-          <button style={btnP} onClick={()=>oM("payment")}>+ Dodaj płatność</button>
-        </div>
-        <div style={{display:"flex",gap:6,marginBottom:11,flexWrap:"wrap"}}>
-          {[["wszystkie","Wszystkie"],["oczekujacy","Oczekuje"],["oplacony","Opłacone"],["nadchodzacy","Nadchodzi"],["zaległe","Zaległe"]].map(([v,l])=>(
-            <button key={v} onClick={()=>setPf(v)} style={{background:pf===v?C.red:C.bg1,border:`1px solid ${pf===v?C.red:C.border}`,color:pf===v?"#fff":C.dim,borderRadius:6,padding:"5px 11px",fontSize:12,cursor:"pointer",fontFamily:"inherit",fontWeight:pf===v?700:400}}>{l}</button>
-          ))}
-        </div>
-        <div className="tsx" style={{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,overflow:"hidden"}}>
-          <table style={{width:"100%",borderCollapse:"collapse",minWidth:600}}>
-            <thead><tr style={{background:C.bg0}}><TH>Klient</TH><TH>Kwota</TH><TH>Data</TH><TH>Forma</TH><TH>Notatka</TH><TH>Status</TH><TH></TH></tr></thead>
-            <tbody>
-              {filtP.map(p=>{
-                const d=dU(p.date);
-                return <tr key={p.id} style={{borderTop:`1px solid ${C.bg3}`}}>
-                  <td style={{padding:"10px 12px",fontSize:13,fontWeight:600}}><EC value={cm[p.clientId]?.name||"—"} onSave={v=>{const c=clients.find(c=>c.name===v);if(c)editP(p.id,"clientId",c.id);else toast("Nie znaleziono klienta","error");}} w={110}/></td>
-                  <td style={{padding:"10px 12px",fontWeight:800,fontFamily:"'Bebas Neue',sans-serif",fontSize:14}}><EC value={p.amount} type="number" onSave={v=>editP(p.id,"amount",v)} w={80} color={C.green}/></td>
-                  <td style={{padding:"10px 12px",color:C.dim,fontSize:12}}><EC value={p.date} onSave={v=>editP(p.id,"date",v)} w={100}/></td>
-                  <td style={{padding:"10px 12px"}}><EC value={p.type} options={typeOpts} onSave={v=>editP(p.id,"type",v)}/></td>
-                  <td style={{padding:"10px 12px",color:C.dim,fontSize:12}}><EC value={p.note||"—"} onSave={v=>editP(p.id,"note",v)} w={120}/></td>
-                  <td style={{padding:"10px 12px"}}><EC value={p.status} options={statusOpts} onSave={v=>editP(p.id,"status",v)}/></td>
-                  <td style={{padding:"10px 12px"}}><div style={{display:"flex",gap:4}}>{p.status!=="oplacony"&&<button onClick={()=>markPaid(p.id)} style={{background:"#001a0a",color:C.green,border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}}>✓</button>}<button onClick={()=>delP(p.id)} style={{background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}}>✕</button></div></td>
-                </tr>;
-              })}
-              {filtP.length===0&&<tr><td colSpan={7} style={{padding:28,textAlign:"center",color:C.dim,fontSize:13}}>Brak płatności</td></tr>}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    )}
-
-    {tab==="clients"&&(
-      <div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:10}}>
-          <div><h2 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:0,letterSpacing:2}}>KLIENCI</h2><p style={{color:C.dim,margin:"2px 0 0",fontSize:12}}>Kliknij pole na karcie aby edytować</p></div>
-          <button style={btnP} onClick={()=>oM("client")}>+ Dodaj klienta</button>
-        </div>
-        <div className="g3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:13}}>
-          {clients.map(c=>{
-            const tP=payments.filter(p=>p.clientId===c.id&&p.status==="oplacony").reduce((s,p)=>s+p.amount,0);
-            const tPn=payments.filter(p=>p.clientId===c.id&&p.status==="oczekujacy").reduce((s,p)=>s+p.amount,0);
-            return <div key={c.id} style={{background:C.bg1,border:`1px solid ${C.border}`,borderTop:`2px solid ${c.status==="aktywny"?C.red:C.dim}`,borderRadius:12,padding:16}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
-                <div><div style={{fontWeight:700,fontSize:15,marginBottom:6}}><EC value={c.name} onSave={v=>editCl(c.id,"name",v)} w={130}/></div><EC value={c.status} options={clStatusOpts} onSave={v=>editCl(c.id,"status",v)}/></div>
-                <div style={{background:c.type==="prowizja"?"#1a0f2a":"#001020",color:c.type==="prowizja"?C.purple:C.blue,fontSize:11,padding:"4px 8px",borderRadius:5,fontWeight:700,textAlign:"center",flexShrink:0}}>
-                  <EC value={c.rate} type="number" onSave={v=>editCl(c.id,"rate",v)} w={50} color={c.type==="prowizja"?C.purple:C.blue}/>
-                  <div style={{fontSize:10,marginTop:1}}><EC value={c.type} options={[{v:"miesieczny",l:"/mies"},{v:"prowizja",l:"% prow."},{v:"mix",l:"mix"}]} onSave={v=>editCl(c.id,"type",v)}/></div>
-                </div>
-              </div>
-              <div style={{fontSize:12,color:C.dim,marginBottom:10}}><EC value={c.notes||"Brak notatek"} onSave={v=>editCl(c.id,"notes",v)} w={180}/></div>
-              <div style={{borderTop:`1px solid ${C.bg3}`,paddingTop:10,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
-                <div><div style={{fontSize:10,color:C.dim,marginBottom:2,textTransform:"uppercase",letterSpacing:1}}>Opłacone</div><div style={{fontWeight:800,color:C.green,fontFamily:"'Bebas Neue',sans-serif"}}>{fmt(tP)}</div></div>
-                <div><div style={{fontSize:10,color:C.dim,marginBottom:2,textTransform:"uppercase",letterSpacing:1}}>Oczekuje</div><div style={{fontWeight:800,color:C.amber,fontFamily:"'Bebas Neue',sans-serif"}}>{fmt(tPn)}</div></div>
-              </div>
-              <button onClick={()=>delCl(c.id)} style={{width:"100%",background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"6px",fontSize:12,cursor:"pointer"}}>Usuń klienta</button>
-            </div>;
-          })}
-        </div>
-      </div>
-    )}
-
-    {tab==="costs"&&(
-      <div>
-        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:10}}>
-          <div><h2 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:0,letterSpacing:2}}>KOSZTY</h2><p style={{color:C.dim,margin:"2px 0 0",fontSize:12}}>Kliknij komórkę aby edytować</p></div>
-          <button style={btnP} onClick={()=>oM("cost")}>+ Dodaj koszt</button>
-        </div>
-        <div className="g3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12,marginBottom:14}}>
-          <KPI label="Razem koszty" value={fmt(totC)} sub={`${costs.length} pozycji`} accent={C.red} icon="💸"/>
-          <KPI label="Cykliczne/mies." value={fmt(costs.filter(c=>c.recurring).reduce((s,c)=>s+c.amount,0))} sub="co miesiąc" accent={C.amber} icon="🔄"/>
-          <KPI label="Jednorazowe" value={fmt(costs.filter(c=>!c.recurring).reduce((s,c)=>s+c.amount,0))} sub="nieregularne" accent={C.blue} icon="📋"/>
-        </div>
-        <div className="tsx" style={{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,overflow:"hidden"}}>
-          <table style={{width:"100%",borderCollapse:"collapse",minWidth:480}}>
-            <thead><tr style={{background:C.bg0}}><TH>Nazwa</TH><TH>Kategoria</TH><TH>Kwota</TH><TH>Data</TH><TH>Typ</TH><TH></TH></tr></thead>
-            <tbody>{costs.map(c=>(
-              <tr key={c.id} style={{borderTop:`1px solid ${C.bg3}`}}>
-                <td style={{padding:"10px 12px",fontWeight:600,fontSize:13}}><EC value={c.name} onSave={v=>editC(c.id,"name",v)} w={150}/></td>
-                <td style={{padding:"10px 12px"}}><EC value={c.category} options={catOpts} onSave={v=>editC(c.id,"category",v)}/></td>
-                <td style={{padding:"10px 12px",fontWeight:800,fontFamily:"'Bebas Neue',sans-serif"}}><EC value={c.amount} type="number" onSave={v=>editC(c.id,"amount",v)} w={70} color={C.red}/></td>
-                <td style={{padding:"10px 12px",color:C.dim,fontSize:12}}><EC value={c.date} onSave={v=>editC(c.id,"date",v)} w={100}/></td>
-                <td style={{padding:"10px 12px"}}><EC value={c.recurring?"cykliczny":"jednorazowy"} options={[{v:"cykliczny",l:"🔄 Cykliczny"},{v:"jednorazowy",l:"Jednorazowy"}]} onSave={v=>editC(c.id,"recurring",v==="cykliczny")}/></td>
-                <td style={{padding:"10px 12px"}}><button onClick={()=>delC(c.id)} style={{background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}}>✕</button></td>
-              </tr>
-            ))}</tbody>
-          </table>
-        </div>
-      </div>
-    )}
-
-    {tab==="split"&&(
-      <div>
-        <h2 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:"0 0 3px",letterSpacing:2}}>PODZIAŁ ZYSKU</h2>
-        <p style={{color:C.dim,margin:"0 0 14px",fontSize:12}}>Automatyczne wyliczenie z opłaconych faktur</p>
-        <div style={{display:"flex",alignItems:"center",marginBottom:14,background:C.bg1,border:`1px solid ${C.border}`,borderTop:`3px solid ${C.red}`,borderRadius:12,padding:"14px 18px",overflowX:"auto",gap:4,flexWrap:"wrap"}}>
-          {[{l:"Przychody brutto",v:fmt(totR),c:C.green},{sep:"−"},{l:"Koszty",v:fmt(totC),c:C.red},{sep:"="},{l:"Zysk netto",v:fmt(net),c:C.blue}].map((x,i)=>
-            x.sep?<div key={i} style={{fontSize:20,color:C.dim,padding:"0 6px",flexShrink:0}}>{x.sep}</div>
-            :<div key={i} style={{textAlign:"center",padding:"0 10px",flexShrink:0}}><div style={{fontSize:10,color:C.dim,marginBottom:4,textTransform:"uppercase",letterSpacing:1.2,whiteSpace:"nowrap"}}>{x.l}</div><div style={{fontSize:18,fontWeight:800,color:x.c,fontFamily:"'Bebas Neue',sans-serif"}}>{x.v}</div></div>
-          )}
-        </div>
-        <div className="g3" style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:13,marginBottom:14}}>
-          {[{n:"Wspólnik A",p:50,a:sp.a,c:C.red,icon:"👑"},{n:"Wspólnik B",p:25,a:sp.b,c:C.green,icon:"◈"},{n:"Wspólnik C",p:25,a:sp.c,c:C.blue,icon:"◈"}].map((s,i)=>(
-            <div key={i} style={{background:C.bg1,border:`1px solid ${s.c}33`,borderTop:`3px solid ${s.c}`,borderRadius:14,padding:"18px 16px",textAlign:"center"}}>
-              <div style={{fontSize:20,marginBottom:6}}>{s.icon}</div>
-              <div style={{fontSize:11,color:C.dim,marginBottom:3,textTransform:"uppercase",letterSpacing:1}}>{s.n}</div>
-              <div style={{fontSize:26,fontWeight:800,color:s.c,fontFamily:"'Bebas Neue',sans-serif"}}>{fmt(s.a)}</div>
-              <div style={{fontSize:12,color:C.dim,marginTop:3}}>{s.p}% z {fmt(net)}</div>
-              <div style={{marginTop:10,height:4,background:C.bg3,borderRadius:2}}><div style={{height:"100%",background:s.c,borderRadius:2,width:`${s.p*2}%`}}/></div>
-            </div>
-          ))}
-        </div>
-        <div style={{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,padding:18}}>
-          <h3 style={{margin:"0 0 11px",fontSize:11,color:C.dim,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700}}>Historia zysku netto</h3>
-          <ResponsiveContainer width="100%" height={160}>
-            <BarChart data={chartD} margin={{top:0,right:0,left:0,bottom:0}}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" vertical={false}/>
-              <XAxis dataKey="month" stroke="#333" tick={{fill:C.dim,fontSize:11}} axisLine={false} tickLine={false}/>
-              <YAxis stroke="#333" tick={{fill:C.dim,fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`}/>
-              <Tooltip content={<ChartTip/>}/>
-              <Bar dataKey="net" name="Zysk netto" fill={C.red} radius={[4,4,0,0]}/>
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-    )}
-
-    {tab==="analytics"&&(
-      <div>
-        <h2 style={{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:"0 0 3px",letterSpacing:2}}>ANALIZY</h2>
-        <p style={{color:C.dim,margin:"0 0 14px",fontSize:12}}>Trendy przychodów, kosztów i zysku</p>
-        <div style={{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,padding:18,marginBottom:13}}>
-          <h3 style={{margin:"0 0 11px",fontSize:11,color:C.dim,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700}}>Przychody vs koszty vs zysk</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={chartD} margin={{top:0,right:0,left:0,bottom:0}}>
-              <defs>
-                <linearGradient id="gR" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.green} stopOpacity={.25}/><stop offset="95%" stopColor={C.green} stopOpacity={0}/></linearGradient>
-                <linearGradient id="gN" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.red} stopOpacity={.3}/><stop offset="95%" stopColor={C.red} stopOpacity={0}/></linearGradient>
-                <linearGradient id="gC" x1="0" y1="0" x2="0" y2="1"><stop offset="5%" stopColor={C.blue} stopOpacity={.2}/><stop offset="95%" stopColor={C.blue} stopOpacity={0}/></linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" vertical={false}/>
-              <XAxis dataKey="month" stroke="#333" tick={{fill:C.dim,fontSize:11}} axisLine={false} tickLine={false}/>
-              <YAxis stroke="#333" tick={{fill:C.dim,fontSize:10}} axisLine={false} tickLine={false} tickFormatter={v=>`${(v/1000).toFixed(0)}k`}/>
-              <Tooltip content={<ChartTip/>}/>
-              <Legend wrapperStyle={{fontSize:12,color:C.dim,paddingTop:10}}/>
-              <Area type="monotone" dataKey="revenue" name="Przychody" stroke={C.green} fill="url(#gR)" strokeWidth={2} dot={{fill:C.green,r:3}}/>
-              <Area type="monotone" dataKey="net" name="Zysk netto" stroke={C.red} fill="url(#gN)" strokeWidth={2} dot={{fill:C.red,r:3}}/>
-              <Area type="monotone" dataKey="costs" name="Koszty" stroke={C.blue} fill="url(#gC)" strokeWidth={2} dot={{fill:C.blue,r:3}}/>
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="g2" style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:13}}>
-          <div style={{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,padding:18}}>
-            <h3 style={{margin:"0 0 11px",fontSize:11,color:C.dim,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700}}>Top klienci</h3>
-            {clients.map(c=>({...c,total:payments.filter(p=>p.clientId===c.id&&p.status==="oplacony").reduce((s,p)=>s+p.amount,0)})).sort((a,b)=>b.total-a.total).map((c,i)=>(
-              <div key={c.id} style={{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:`1px solid ${C.bg3}`}}>
-                <div style={{display:"flex",alignItems:"center",gap:8}}><span style={{fontSize:12,color:i===0?C.red:C.dim,fontWeight:700,width:20,textAlign:"center"}}>{i===0?"🥇":`#${i+1}`}</span><span style={{fontSize:13}}>{c.name}</span></div>
-                <span style={{fontWeight:800,color:C.red,fontFamily:"'Bebas Neue',sans-serif"}}>{fmt(c.total)}</span>
-              </div>
-            ))}
-          </div>
-          <div style={{background:C.bg1,border:`1px solid ${C.border}`,borderRadius:12,padding:18}}>
-            <h3 style={{margin:"0 0 11px",fontSize:11,color:C.dim,textTransform:"uppercase",letterSpacing:1.5,fontWeight:700}}>Koszty wg kategorii</h3>
-            {["tech","marketing","uslugi","inne"].map(cat=>{
-              const t=costs.filter(c=>c.category===cat).reduce((s,c)=>s+c.amount,0);
-              const p=totC?Math.round((t/totC)*100):0;
-              const col={tech:C.blue,marketing:C.red,uslugi:C.green,inne:C.dim}[cat];
-              return <div key={cat} style={{marginBottom:10}}>
-                <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}><span style={{fontSize:13,textTransform:"capitalize"}}>{cat}</span><span style={{fontSize:13,fontWeight:700,color:col}}>{fmt(t)} <span style={{color:C.dim,fontWeight:400}}>({p}%)</span></span></div>
-                <div style={{height:4,background:C.bg3,borderRadius:2}}><div style={{height:"100%",background:col,borderRadius:2,width:`${p}%`}}/></div>
-              </div>;
-            })}
-            <div style={{marginTop:12,padding:11,background:C.bg0,borderRadius:8,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-              <span style={{fontSize:11,color:C.dim,textTransform:"uppercase",letterSpacing:1}}>Marża netto</span>
-              <span style={{fontSize:22,fontWeight:800,color:C.green,fontFamily:"'Bebas Neue',sans-serif"}}>{totR?Math.round((net/totR)*100):0}%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    )}
-  </main>
-
-  {modal==="payment"&&(
-    <Modal title={form.id?"EDYTUJ PŁATNOŚĆ":"NOWA PŁATNOŚĆ"} onClose={cM}>
-      <Field label="Klient *"><select style={iSt} value={form.clientId||""} onChange={fv("clientId")}><option value="">Wybierz…</option>{clients.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></Field>
-      <Row><Field label="Kwota *" half><input style={iSt} type="number" placeholder="0" value={form.amount||""} onChange={fv("amount")}/></Field><Field label="Data *" half><input style={iSt} type="date" value={form.date||""} onChange={fv("date")}/></Field></Row>
-      <Row><Field label="Forma" half><select style={iSt} value={form.type||"gotowka"} onChange={fv("type")}><option value="gotowka">💳 Przelew</option><option value="produkt">📦 Produkt</option></select></Field><Field label="Status" half><select style={iSt} value={form.status||"oczekujacy"} onChange={fv("status")}><option value="oczekujacy">Oczekuje</option><option value="nadchodzacy">Nadchodzi</option><option value="oplacony">Opłacony</option></select></Field></Row>
-      <Field label="Notatka"><input style={iSt} placeholder="np. Maj…" value={form.note||""} onChange={fv("note")}/></Field>
-      <div style={{display:"flex",gap:10,justifyContent:"flex-end",marginTop:12}}><button onClick={cM} style={btnG}>Anuluj</button><button style={btnP} onClick={savePay}>Zapisz</button></div>
-    </Modal>
-  )}
-  {modal==="cost"&&(
-    <Modal title={form.id?"EDYTUJ KOSZT":"NOWY KOSZT"} onClose={cM}>
-      <Field label="Nazwa *"><input style={iSt} placeholder="np. Hosting…" value={form.name||""} onChange={fv("name")}/></Field>
-      <Row><Field label="Kwota *" half><input style={iSt} type="number" placeholder="0" value={form.amount||""} onChange={fv("amount")}/></Field><Field label="Kategoria" half><select style={iSt} value={form.category||"inne"} onChange={fv("category")}><option value="tech">Tech</option><option value="marketing">Marketing</option><option value="uslugi">Usługi</option><option value="inne">Inne</option></select></Field></Row>
-      <Row><Field label="Data" half><input style={iSt} type="date" value={form.date||""} onChange={fv("date")}/></Field><Field label="Typ" half><select style={iSt} value={form.recurring||"nie"} onChange={fv("recurring")}><option value="nie">Jednorazowy</option><option value="tak">🔄 Cykliczny</option></select></Field></Row>
-      <div style={{display:"flex",gap:10,justifyContent:"flex-end",marginTop:12}}><button onClick={cM} style={btnG}>Anuluj</button><button style={btnP} onClick={saveCost}>Zapisz</button></div>
-    </Modal>
-  )}
-  {modal==="client"&&(
-    <Modal title={form.id?"EDYTUJ KLIENTA":"NOWY KLIENT"} onClose={cM}>
-      <Field label="Nazwa *"><input style={iSt} placeholder="np. TechGear Pro…" value={form.name||""} onChange={fv("name")}/></Field>
-      <Row><Field label="Typ" half><select style={iSt} value={form.type||"miesieczny"} onChange={fv("type")}><option value="miesieczny">💰 Miesięczna</option><option value="prowizja">% Prowizja</option><option value="mix">🔀 Mix</option></select></Field><Field label="Stawka" half><input style={iSt} type="number" value={form.rate||""} onChange={fv("rate")}/></Field></Row>
-      <Field label="Notatki"><input style={iSt} placeholder="Warunki, kontakt…" value={form.notes||""} onChange={fv("notes")}/></Field>
-      <div style={{display:"flex",gap:10,justifyContent:"flex-end",marginTop:12}}><button onClick={cM} style={btnG}>Anuluj</button><button style={btnP} onClick={saveCl}>Zapisz</button></div>
-    </Modal>
-  )}
-
-  <Toast toasts={toasts}/>
-</div>
-```
-
-);
+function setState(patch){
+  Object.assign(state,typeof patch==="function"?patch(state):patch);
+  render();
 }
 
-ReactDOM.createRoot(document.getElementById(“root”)).render(<App/>);
+// ── toast ──────────────────────────────────────────────────────────────────
+function toast(msg,type="ok"){
+  const id=uid();
+  setState(s=>({toasts:[...s.toasts,{id,msg,type}]}));
+  setTimeout(()=>setState(s=>({toasts:s.toasts.filter(t=>t.id!==id)})),2800);
+}
+
+// ── badge ──────────────────────────────────────────────────────────────────
+function badge(s){
+  const m={oplacony:{l:"Opłacony",bg:"#001a0a",c:"#00C851"},oczekujacy:{l:"Oczekuje",bg:"#1a1000",c:"#FFB300"},nadchodzacy:{l:"Nadchodzi",bg:"#001020",c:"#4DA6FF"},aktywny:{l:"Aktywny",bg:"#001a0a",c:"#00C851"},zalegly:{l:"Zaległy",bg:"#1a0000",c:"#FF4444"}};
+  const x=m[s]||m.oczekujacy;
+  const el=h("span",{className:"badge",style:{background:x.bg,color:x.c,border:`1px solid ${x.c}33`}},
+    h("span",{className:"badge-dot",style:{background:x.c}}),x.l);
+  return el;
+}
+
+// ── editable cell ──────────────────────────────────────────────────────────
+function editableCell(value,onSave,opts={}){
+  const {type="text",options,color,w=90}=opts;
+  const wrap=h("span",{});
+
+  function showDisplay(){
+    wrap.innerHTML="";
+    const sp=h("span",{className:"editable",style:{color:color||"",minWidth:w+"px"}},String(value));
+    sp.title="Kliknij aby edytować";
+    sp.onclick=()=>showEdit();
+    wrap.appendChild(sp);
+  }
+
+  function showEdit(){
+    wrap.innerHTML="";
+    if(options){
+      const sel=h("select",{className:"edit-select"});
+      options.forEach(o=>{
+        const opt=document.createElement("option");
+        opt.value=o.v;opt.textContent=o.l;
+        if(o.v===value)opt.selected=true;
+        sel.appendChild(opt);
+      });
+      sel.onchange=()=>{value=sel.value;onSave(sel.value);showDisplay();};
+      sel.onblur=()=>showDisplay();
+      wrap.appendChild(sel);
+      setTimeout(()=>sel.focus(),0);
+    } else {
+      const inp=h("input",{className:"edit-input",type:type==="number"?"number":"text",value:String(value),style:{width:w+"px"}});
+      const save=()=>{const v=type==="number"?+inp.value:inp.value;if(String(v)!==String(value)){value=v;onSave(v);}showDisplay();};
+      inp.onblur=save;
+      inp.onkeydown=e=>{if(e.key==="Enter")save();if(e.key==="Escape"){showDisplay();}};
+      wrap.appendChild(inp);
+      setTimeout(()=>inp.focus(),0);
+    }
+  }
+
+  showDisplay();
+  return wrap;
+}
+
+// ── calcs ──────────────────────────────────────────────────────────────────
+function calcs(){
+  const{payments,costs}=state;
+  const paid=payments.filter(p=>p.status==="oplacony");
+  const pend=payments.filter(p=>p.status==="oczekujacy");
+  const totR=paid.reduce((s,p)=>s+p.amount,0);
+  const totP=pend.reduce((s,p)=>s+p.amount,0);
+  const totC=costs.reduce((s,c)=>s+c.amount,0);
+  const net=totR-totC;
+  return{paid,pend,totR,totP,totC,net,sp:{a:net*.5,b:net*.25,c:net*.25}};
+}
+
+function clientMap(){return Object.fromEntries(state.clients.map(c=>[c.id,c]));}
+
+// ── KPI card ───────────────────────────────────────────────────────────────
+function kpi(label,value,sub,accent,icon){
+  return h("div",{style:{background:"#111",border:"1px solid #222",borderRadius:12,padding:"16px 18px",borderTop:`3px solid ${accent}`,position:"relative",overflow:"hidden"}},
+    h("div",{style:{position:"absolute",top:10,right:12,fontSize:18,opacity:.08}},icon),
+    h("div",{style:{fontSize:10,color:"#555",marginBottom:6,textTransform:"uppercase",letterSpacing:"1.2px",fontWeight:600}},label),
+    h("div",{style:{fontSize:20,fontWeight:800,color:accent,marginBottom:2,fontFamily:"'Bebas Neue',sans-serif",letterSpacing:1}},value),
+    h("div",{style:{fontSize:11,color:"#555"}},sub)
+  );
+}
+
+// ── modal helpers ──────────────────────────────────────────────────────────
+function field(label,inputEl,half){
+  return h("div",{style:{marginBottom:12,...(half?{flex:1}:{})}},
+    h("label",{className:"field-label"},label),
+    inputEl
+  );
+}
+function row(...children){return h("div",{style:{display:"flex",gap:10}},children);}
+function fInput(key,placeholder,type="text"){
+  const el=h("input",{className:"field-input",type,placeholder:placeholder||"",value:state.form[key]||""});
+  el.oninput=e=>state.form[key]=e.target.value;
+  return el;
+}
+function fSelect(key,options,defaultVal){
+  const sel=h("select",{className:"field-select"});
+  options.forEach(o=>{
+    const opt=document.createElement("option");
+    opt.value=o.v;opt.textContent=o.l;
+    if((state.form[key]||defaultVal)===o.v)opt.selected=true;
+    sel.appendChild(opt);
+  });
+  sel.onchange=e=>state.form[key]=e.target.value;
+  return sel;
+}
+
+// ── LOGIN ──────────────────────────────────────────────────────────────────
+function renderLogin(){
+  let pw="",show=false,err=false,shaking=false;
+
+  const wrap=h("div",{style:{minHeight:"100vh",background:"#0a0a0a",display:"flex",alignItems:"center",justifyContent:"center",padding:16}});
+  const inner=h("div",{className:"fi",style:{width:"100%",maxWidth:360}});
+  wrap.appendChild(inner);
+
+  function build(){
+    inner.innerHTML="";
+    inner.appendChild(
+      h("div",{style:{textAlign:"center",marginBottom:32}},
+        h("div",{style:{width:50,height:50,background:"#E60000",borderRadius:12,display:"inline-flex",alignItems:"center",justifyContent:"center",fontSize:22,fontWeight:900,color:"#fff",fontFamily:"'Bebas Neue',sans-serif",marginBottom:12}},"A"),
+        h("div",{},
+          h("span",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:3}},"AFFILIATE"),
+          h("span",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,letterSpacing:3,color:"#E60000"}},"DESK")
+        ),
+        h("div",{style:{fontSize:11,color:"#555",marginTop:3,letterSpacing:1}},"PANEL FINANSOWY · PRO")
+      )
+    );
+
+    const card=h("div",{className:shaking?"shake":"",style:{background:"#111",border:"1px solid #222",borderTop:"3px solid #E60000",borderRadius:14,padding:26}});
+    card.appendChild(h("div",{style:{fontSize:11,color:"#555",marginBottom:18,letterSpacing:1,textTransform:"uppercase",fontWeight:600}},"🔒 Wymagane hasło dostępu"));
+
+    const pwWrap=h("div",{style:{position:"relative",marginBottom:8}});
+    const pwInp=h("input",{type:show?"text":"password",placeholder:"Wpisz hasło…",style:{width:"100%",background:"#1e1e1e",border:`1px solid ${err?"#E60000":"#2a2a2a"}`,borderRadius:8,padding:"9px 44px 9px 11px",color:"#fff",fontSize:15}});
+    pwInp.value=pw;
+    pwInp.oninput=e=>{pw=e.target.value;err=false;};
+    pwInp.onkeydown=e=>{if(e.key==="Enter")tryLogin();};
+    pwInp.focus();
+    const eye=h("button",{style:{position:"absolute",right:12,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",color:"#555",cursor:"pointer",fontSize:15,padding:4}},show?"🙈":"👁");
+    eye.onclick=()=>{show=!show;build();};
+    pwWrap.appendChild(pwInp);pwWrap.appendChild(eye);
+    card.appendChild(h("label",{className:"field-label"},"Hasło"));
+    card.appendChild(pwWrap);
+    if(err)card.appendChild(h("div",{style:{color:"#FF4444",fontSize:12,marginBottom:8,fontWeight:600}},"⚠ Nieprawidłowe hasło"));
+
+    const loginBtn=h("button",{className:"btn-red",style:{width:"100%",padding:13,fontSize:14,letterSpacing:1}},"ZALOGUJ SIĘ →");
+    loginBtn.onclick=tryLogin;
+    card.appendChild(loginBtn);
+    inner.appendChild(card);
+  }
+
+  function tryLogin(){
+    if(pw===PASSWORD){setState({loggedIn:true});}
+    else{err=true;shaking=true;pw="";build();setTimeout(()=>{shaking=false;build();},500);}
+  }
+
+  build();
+  return wrap;
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────────────────────
+function renderDashboard(){
+  const{totR,totP,totC,net,sp,paid,pend}=calcs();
+  const cm=clientMap();
+
+  const el=h("div",{});
+  el.appendChild(h("h1",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,margin:"0 0 3px",letterSpacing:2}},"PRZEGLĄD — MAJ 2026"));
+  el.appendChild(h("p",{style:{color:"#555",margin:"0 0 14px",fontSize:12}},`${state.clients.filter(c=>c.status==="aktywny").length} aktywnych klientów`));
+
+  const grid=h("div",{className:"kpi-grid"});
+  grid.appendChild(kpi("Przychody (opłacone)",fmt(totR),`${paid.length} faktur`,"#00C851","💰"));
+  grid.appendChild(kpi("Oczekuje na wpłatę",fmt(totP),`${pend.length} faktur`,"#FFB300","⏳"));
+  grid.appendChild(kpi("Koszty operacyjne",fmt(totC),`${state.costs.length} pozycji`,"#E60000","📉"));
+  grid.appendChild(kpi("Zysk netto",fmt(net),"50/25/25","#4DA6FF","📈"));
+  el.appendChild(grid);
+
+  const two=h("div",{className:"two-col"});
+
+  // upcoming
+  const upCard=h("div",{className:"card"});
+  upCard.appendChild(h("h3",{style:{margin:"0 0 11px",fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:"1.5px",fontWeight:700}},"Najbliższe płatności"));
+  const upcoming=[...state.payments].filter(p=>p.status!=="oplacony").sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,5);
+  upcoming.forEach(p=>{
+    const d=dU(p.date);
+    const row2=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #1e1e1e"}});
+    const left=h("div",{});
+    left.appendChild(h("div",{style:{fontSize:13,fontWeight:600}},cm[p.clientId]?.name||"—"));
+    const sub=h("div",{style:{fontSize:11,color:"#555",marginTop:1}},fmtDate(p.date)+" · ");
+    const ds=d<0?h("span",{style:{color:"#FF4444"}},`zaległe ${Math.abs(d)}d`):d===0?h("span",{style:{color:"#E60000",fontWeight:800}},"DZIŚ!"):h("span",{style:{color:d<=3?"#FFB300":"#555"}},`za ${d}d`);
+    sub.appendChild(ds);left.appendChild(sub);
+    const right=h("div",{style:{textAlign:"right"}});
+    right.appendChild(h("div",{style:{fontWeight:800,fontSize:14,fontFamily:"'Bebas Neue',sans-serif",letterSpacing:1}},fmt(p.amount)));
+    right.appendChild(badge(d<0?"zalegly":p.status));
+    row2.appendChild(left);row2.appendChild(right);
+    upCard.appendChild(row2);
+  });
+  if(!upcoming.length)upCard.appendChild(h("div",{style:{color:"#555",fontSize:13}},"Brak oczekujących 🎉"));
+  two.appendChild(upCard);
+
+  // split
+  const splitCard=h("div",{className:"card"});
+  splitCard.appendChild(h("h3",{style:{margin:"0 0 11px",fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:"1.5px",fontWeight:700}},"Podział zysku netto"));
+  const eq=h("div",{style:{marginBottom:10,padding:"8px 12px",background:"#0a0a0a",borderRadius:8,fontSize:12,color:"#555",display:"flex",justifyContent:"space-between"}});
+  eq.appendChild(h("span",{},`${fmt(totR)} − ${fmt(totC)}`));
+  eq.appendChild(h("span",{style:{color:"#4DA6FF",fontWeight:800,fontFamily:"'Bebas Neue',sans-serif"}},fmt(net)));
+  splitCard.appendChild(eq);
+  [{n:"Wspólnik A",p:"50%",a:sp.a,c:"#E60000",w:"50%"},{n:"Wspólnik B",p:"25%",a:sp.b,c:"#00C851",w:"25%"},{n:"Wspólnik C",p:"25%",a:sp.c,c:"#4DA6FF",w:"25%"}].forEach(s=>{
+    const sr=h("div",{style:{marginBottom:10}});
+    const sr2=h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:3}});
+    sr2.appendChild(h("span",{style:{fontSize:13}},s.n+" ",h("span",{style:{color:"#555"}},s.p)));
+    sr2.appendChild(h("span",{style:{fontWeight:800,color:s.c,fontFamily:"'Bebas Neue',sans-serif"}},fmt(s.a)));
+    sr.appendChild(sr2);
+    const bar=h("div",{style:{height:4,background:"#1e1e1e",borderRadius:2}});
+    bar.appendChild(h("div",{style:{height:"100%",background:s.c,borderRadius:2,width:s.w}}));
+    sr.appendChild(bar);splitCard.appendChild(sr);
+  });
+  two.appendChild(splitCard);
+  el.appendChild(two);
+  return el;
+}
+
+// ── PAYMENTS ───────────────────────────────────────────────────────────────
+function renderPayments(){
+  const cm=clientMap();
+  const el=h("div",{});
+  const hdr=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:10}});
+  hdr.appendChild(h("div",{},h("h2",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:0,letterSpacing:2}},"PŁATNOŚCI"),h("p",{style:{color:"#555",margin:"2px 0 0",fontSize:12}},`${state.payments.length} łącznie`)));
+  const addBtn=h("button",{className:"btn-red"},"+ Dodaj płatność");
+  addBtn.onclick=()=>setState({modal:"payment",form:{}});
+  hdr.appendChild(addBtn);
+  el.appendChild(hdr);
+
+  // filters
+  const filters=h("div",{style:{display:"flex",gap:6,marginBottom:11,flexWrap:"wrap"}});
+  [["wszystkie","Wszystkie"],["oczekujacy","Oczekuje"],["oplacony","Opłacone"],["nadchodzacy","Nadchodzi"],["zaległe","Zaległe"]].forEach(([v,l])=>{
+    const active=state.pf===v;
+    const btn=h("button",{className:"filter-btn",style:{background:active?"#E60000":"#111",borderColor:active?"#E60000":"#222",color:active?"#fff":"#555",fontWeight:active?700:400}},l);
+    btn.onclick=()=>setState({pf:v});
+    filters.appendChild(btn);
+  });
+  el.appendChild(filters);
+
+  let filtP=[...state.payments].sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(state.pf==="zaległe")filtP=filtP.filter(p=>p.status==="oczekujacy"&&dU(p.date)<0);
+  else if(state.pf!=="wszystkie")filtP=filtP.filter(p=>p.status===state.pf);
+
+  const wrap=h("div",{className:"table-wrap",style:{background:"#111",border:"1px solid #222",borderRadius:12,overflow:"hidden"}});
+  const tbl=h("table",{});
+  tbl.appendChild(h("thead",{},h("tr",{},
+    h("th",{},"Klient"),h("th",{},"Kwota"),h("th",{},"Data"),h("th",{},"Forma"),h("th",{},"Notatka"),h("th",{},"Status"),h("th",{})
+  )));
+  const tbody=h("tbody",{});
+  if(!filtP.length){
+    tbody.appendChild(h("tr",{},h("td",{colSpan:7,style:{textAlign:"center",padding:28,color:"#555"}},"Brak płatności")));
+  }
+  filtP.forEach(p=>{
+    const tr=h("tr",{});
+    // klient
+    const clientNames=state.clients.map(c=>c.name);
+    tr.appendChild(h("td",{style:{fontWeight:600}},
+      editableCell(cm[p.clientId]?.name||"—",v=>{const c=state.clients.find(c=>c.name===v);if(c){state.payments=state.payments.map(x=>x.id===p.id?{...x,clientId:c.id}:x);toast("Zapisano");}else toast("Nie znaleziono klienta","error");render();},{w:110})
+    ));
+    // kwota
+    tr.appendChild(h("td",{style:{fontWeight:800,fontFamily:"'Bebas Neue',sans-serif",fontSize:14}},
+      editableCell(p.amount,v=>{state.payments=state.payments.map(x=>x.id===p.id?{...x,amount:+v}:x);toast("Zapisano");render();},{type:"number",color:"#00C851",w:80})
+    ));
+    // data
+    tr.appendChild(h("td",{style:{color:"#555",fontSize:12}},
+      editableCell(p.date,v=>{state.payments=state.payments.map(x=>x.id===p.id?{...x,date:v}:x);toast("Zapisano");render();},{w:100})
+    ));
+    // forma
+    tr.appendChild(h("td",{},
+      editableCell(p.type,v=>{state.payments=state.payments.map(x=>x.id===p.id?{...x,type:v}:x);toast("Zapisano");render();},{options:[{v:"gotowka",l:"💳 Przelew"},{v:"produkt",l:"📦 Produkt"}]})
+    ));
+    // notatka
+    tr.appendChild(h("td",{style:{color:"#555",fontSize:12}},
+      editableCell(p.note||"—",v=>{state.payments=state.payments.map(x=>x.id===p.id?{...x,note:v}:x);toast("Zapisano");render();},{w:120})
+    ));
+    // status
+    tr.appendChild(h("td",{},
+      editableCell(p.status,v=>{state.payments=state.payments.map(x=>x.id===p.id?{...x,status:v}:x);toast("Zapisano");render();},{options:[{v:"oczekujacy",l:"Oczekuje"},{v:"nadchodzacy",l:"Nadchodzi"},{v:"oplacony",l:"Opłacony"}]})
+    ));
+    // akcje
+    const actions=h("td",{});
+    const btns=h("div",{style:{display:"flex",gap:4}});
+    if(p.status!=="oplacony"){
+      const ok=h("button",{style:{background:"#001a0a",color:"#00C851",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}},"✓");
+      ok.onclick=()=>{state.payments=state.payments.map(x=>x.id===p.id?{...x,status:"oplacony"}:x);toast("Opłacone ✓");render();};
+      btns.appendChild(ok);
+    }
+    const del=h("button",{style:{background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}},"✕");
+    del.onclick=()=>{state.payments=state.payments.filter(x=>x.id!==p.id);toast("Usunięto");render();};
+    btns.appendChild(del);actions.appendChild(btns);tr.appendChild(actions);
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);wrap.appendChild(tbl);el.appendChild(wrap);
+  return el;
+}
+
+// ── CLIENTS ────────────────────────────────────────────────────────────────
+function renderClients(){
+  const el=h("div",{});
+  const hdr=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:10}});
+  hdr.appendChild(h("div",{},h("h2",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:0,letterSpacing:2}},"KLIENCI"),h("p",{style:{color:"#555",margin:"2px 0 0",fontSize:12}},"Kliknij pole aby edytować")));
+  const addBtn=h("button",{className:"btn-red"},"+ Dodaj klienta");
+  addBtn.onclick=()=>setState({modal:"client",form:{}});
+  hdr.appendChild(addBtn);el.appendChild(hdr);
+
+  const grid=h("div",{className:"three-col"});
+  state.clients.forEach(c=>{
+    const tP=state.payments.filter(p=>p.clientId===c.id&&p.status==="oplacony").reduce((s,p)=>s+p.amount,0);
+    const tPn=state.payments.filter(p=>p.clientId===c.id&&p.status==="oczekujacy").reduce((s,p)=>s+p.amount,0);
+    const card=h("div",{style:{background:"#111",border:"1px solid #222",borderTop:`2px solid ${c.status==="aktywny"?"#E60000":"#555"}`,borderRadius:12,padding:16}});
+
+    const top=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}});
+    const left=h("div",{});
+    const nameWrap=h("div",{style:{fontWeight:700,fontSize:15,marginBottom:6}});
+    nameWrap.appendChild(editableCell(c.name,v=>{state.clients=state.clients.map(x=>x.id===c.id?{...x,name:v}:x);toast("Zapisano");render();},{w:130}));
+    left.appendChild(nameWrap);
+    left.appendChild(editableCell(c.status,v=>{state.clients=state.clients.map(x=>x.id===c.id?{...x,status:v}:x);toast("Zapisano");render();},{options:[{v:"aktywny",l:"Aktywny"},{v:"oczekujacy",l:"Oczekujący"}]}));
+    top.appendChild(left);
+
+    const rateBox=h("div",{style:{background:c.type==="prowizja"?"#1a0f2a":"#001020",color:c.type==="prowizja"?"#BB86FC":"#4DA6FF",fontSize:11,padding:"4px 8px",borderRadius:5,fontWeight:700,textAlign:"center",flexShrink:0}});
+    rateBox.appendChild(editableCell(c.rate,v=>{state.clients=state.clients.map(x=>x.id===c.id?{...x,rate:+v}:x);toast("Zapisano");render();},{type:"number",w:50,color:c.type==="prowizja"?"#BB86FC":"#4DA6FF"}));
+    rateBox.appendChild(editableCell(c.type,v=>{state.clients=state.clients.map(x=>x.id===c.id?{...x,type:v}:x);toast("Zapisano");render();},{options:[{v:"miesieczny",l:"/mies"},{v:"prowizja",l:"% prow."},{v:"mix",l:"mix"}]}));
+    top.appendChild(rateBox);
+    card.appendChild(top);
+
+    const notesWrap=h("div",{style:{fontSize:12,color:"#555",marginBottom:10}});
+    notesWrap.appendChild(editableCell(c.notes||"Brak notatek",v=>{state.clients=state.clients.map(x=>x.id===c.id?{...x,notes:v}:x);toast("Zapisano");render();},{w:180}));
+    card.appendChild(notesWrap);
+
+    const statsRow=h("div",{style:{borderTop:"1px solid #1e1e1e",paddingTop:10,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}});
+    [{l:"Opłacone",v:fmt(tP),c:"#00C851"},{l:"Oczekuje",v:fmt(tPn),c:"#FFB300"}].forEach(s=>{
+      statsRow.appendChild(h("div",{},h("div",{style:{fontSize:10,color:"#555",marginBottom:2,textTransform:"uppercase",letterSpacing:1}},s.l),h("div",{style:{fontWeight:800,color:s.c,fontFamily:"'Bebas Neue',sans-serif"}},s.v)));
+    });
+    card.appendChild(statsRow);
+
+    const delBtn=h("button",{style:{width:"100%",background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"6px",fontSize:12,cursor:"pointer"}},"Usuń klienta");
+    delBtn.onclick=()=>{state.clients=state.clients.filter(x=>x.id!==c.id);toast("Usunięto");render();};
+    card.appendChild(delBtn);
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+  return el;
+}
+
+// ── COSTS ──────────────────────────────────────────────────────────────────
+function renderCosts(){
+  const{totC}=calcs();
+  const el=h("div",{});
+  const hdr=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:10}});
+  hdr.appendChild(h("div",{},h("h2",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:0,letterSpacing:2}},"KOSZTY"),h("p",{style:{color:"#555",margin:"2px 0 0",fontSize:12}},"Kliknij komórkę aby edytować")));
+  const addBtn=h("button",{className:"btn-red"},"+ Dodaj koszt");
+  addBtn.onclick=()=>setState({modal:"cost",form:{}});
+  hdr.appendChild(addBtn);el.appendChild(hdr);
+
+  const kpiG=h("div",{className:"three-col",style:{marginBottom:14}});
+  kpiG.appendChild(kpi("Razem koszty",fmt(totC),`${state.costs.length} pozycji`,"#E60000","💸"));
+  kpiG.appendChild(kpi("Cykliczne/mies.",fmt(state.costs.filter(c=>c.recurring).reduce((s,c)=>s+c.amount,0)),"co miesiąc","#FFB300","🔄"));
+  kpiG.appendChild(kpi("Jednorazowe",fmt(state.costs.filter(c=>!c.recurring).reduce((s,c)=>s+c.amount,0)),"nieregularne","#4DA6FF","📋"));
+  el.appendChild(kpiG);
+
+  const wrap=h("div",{className:"table-wrap",style:{background:"#111",border:"1px solid #222",borderRadius:12,overflow:"hidden"}});
+  const tbl=h("table",{});
+  tbl.appendChild(h("thead",{},h("tr",{},h("th",{},"Nazwa"),h("th",{},"Kategoria"),h("th",{},"Kwota"),h("th",{},"Data"),h("th",{},"Typ"),h("th",{}))));
+  const tbody=h("tbody",{});
+  state.costs.forEach(c=>{
+    const tr=h("tr",{});
+    tr.appendChild(h("td",{style:{fontWeight:600}},editableCell(c.name,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,name:v}:x);toast("Zapisano");render();},{w:150})));
+    tr.appendChild(h("td",{},editableCell(c.category,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,category:v}:x);toast("Zapisano");render();},{options:[{v:"tech",l:"Tech"},{v:"marketing",l:"Marketing"},{v:"uslugi",l:"Usługi"},{v:"inne",l:"Inne"}]})));
+    tr.appendChild(h("td",{style:{fontWeight:800,fontFamily:"'Bebas Neue',sans-serif"}},editableCell(c.amount,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,amount:+v}:x);toast("Zapisano");render();},{type:"number",color:"#E60000",w:70})));
+    tr.appendChild(h("td",{style:{color:"#555",fontSize:12}},editableCell(c.date,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,date:v}:x);toast("Zapisano");render();},{w:100})));
+    tr.appendChild(h("td",{},editableCell(c.recurring?"cykliczny":"jednorazowy",v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,recurring:v==="cykliczny"}:x);toast("Zapisano");render();},{options:[{v:"cykliczny",l:"🔄 Cykliczny"},{v:"jednorazowy",l:"Jednorazowy"}]})));
+    const del=h("button",{style:{background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}},"✕");
+    del.onclick=()=>{state.costs=state.costs.filter(x=>x.id!==c.id);toast("Usunięto");render();};
+    tr.appendChild(h("td",{},del));
+    tbody.appendChild(tr);
+  });
+  tbl.appendChild(tbody);wrap.appendChild(tbl);el.appendChild(wrap);
+  return el;
+}
+
+// ── SPLIT ──────────────────────────────────────────────────────────────────
+function renderSplit(){
+  const{totR,totC,net,sp}=calcs();
+  const el=h("div",{});
+  el.appendChild(h("h2",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:"0 0 3px",letterSpacing:2}},"PODZIAŁ ZYSKU"));
+  el.appendChild(h("p",{style:{color:"#555",margin:"0 0 14px",fontSize:12}},"Automatyczne wyliczenie z opłaconych faktur"));
+
+  const eqBar=h("div",{style:{display:"flex",alignItems:"center",marginBottom:14,background:"#111",border:"1px solid #222",borderTop:"3px solid #E60000",borderRadius:12,padding:"14px 18px",flexWrap:"wrap",gap:4}});
+  [{l:"Przychody brutto",v:fmt(totR),c:"#00C851"},{sep:"−"},{l:"Koszty",v:fmt(totC),c:"#E60000"},{sep:"="},{l:"Zysk netto",v:fmt(net),c:"#4DA6FF"}].forEach(x=>{
+    if(x.sep)eqBar.appendChild(h("div",{style:{fontSize:20,color:"#555",padding:"0 6px",flexShrink:0}},x.sep));
+    else eqBar.appendChild(h("div",{style:{textAlign:"center",padding:"0 10px",flexShrink:0}},h("div",{style:{fontSize:10,color:"#555",marginBottom:4,textTransform:"uppercase",letterSpacing:"1.2px",whiteSpace:"nowrap"}},x.l),h("div",{style:{fontSize:18,fontWeight:800,color:x.c,fontFamily:"'Bebas Neue',sans-serif"}},x.v)));
+  });
+  el.appendChild(eqBar);
+
+  const grid=h("div",{className:"three-col"});
+  [{n:"Wspólnik A",p:50,a:sp.a,c:"#E60000",icon:"👑"},{n:"Wspólnik B",p:25,a:sp.b,c:"#00C851",icon:"◈"},{n:"Wspólnik C",p:25,a:sp.c,c:"#4DA6FF",icon:"◈"}].forEach(s=>{
+    const card=h("div",{style:{background:"#111",border:`1px solid ${s.c}33`,borderTop:`3px solid ${s.c}`,borderRadius:14,padding:"18px 16px",textAlign:"center"}},
+      h("div",{style:{fontSize:20,marginBottom:6}},s.icon),
+      h("div",{style:{fontSize:11,color:"#555",marginBottom:3,textTransform:"uppercase",letterSpacing:1}},s.n),
+      h("div",{style:{fontSize:26,fontWeight:800,color:s.c,fontFamily:"'Bebas Neue',sans-serif"}},fmt(s.a)),
+      h("div",{style:{fontSize:12,color:"#555",marginTop:3}},`${s.p}% z ${fmt(net)}`),
+      h("div",{style:{marginTop:10,height:4,background:"#1e1e1e",borderRadius:2}},h("div",{style:{height:"100%",background:s.c,borderRadius:2,width:`${s.p*2}%`}}))
+    );
+    grid.appendChild(card);
+  });
+  el.appendChild(grid);
+  return el;
+}
+
+// ── ANALYTICS ─────────────────────────────────────────────────────────────
+function renderAnalytics(){
+  const{totR,totC,net}=calcs();
+  const chartData=[...HIST.map(m=>({...m,net:m.revenue-m.costs})),{month:"Maj",revenue:totR,costs:totC,net}];
+  const el=h("div",{});
+  el.appendChild(h("h2",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:"0 0 14px",letterSpacing:2}},"ANALIZY"));
+
+  // simple bar chart via canvas
+  const canvasWrap=h("div",{className:"card",style:{marginBottom:13}});
+  canvasWrap.appendChild(h("h3",{style:{margin:"0 0 14px",fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:"1.5px",fontWeight:700}},"Przychody vs zysk netto (miesięcznie)"));
+  const canvas=document.createElement("canvas");
+  canvas.width=700;canvas.height=180;canvas.style.width="100%";canvas.style.height="auto";
+  canvasWrap.appendChild(canvas);
+  el.appendChild(canvasWrap);
+  setTimeout(()=>{
+    const ctx=canvas.getContext("2d");
+    const W=700,H=180,PAD=40,BAR_W=40,GAP=60;
+    const maxV=Math.max(...chartData.map(d=>d.revenue))*1.1;
+    ctx.clearRect(0,0,W,H);
+    chartData.forEach((d,i)=>{
+      const x=PAD+i*(BAR_W*2+GAP);
+      const rH=(d.revenue/maxV)*(H-40);
+      const nH=(Math.max(0,d.net)/maxV)*(H-40);
+      ctx.fillStyle="#00C85144";ctx.fillRect(x,H-20-rH,BAR_W,rH);
+      ctx.fillStyle="#00C851";ctx.fillRect(x,H-20-rH,BAR_W,3);
+      ctx.fillStyle="#E6000044";ctx.fillRect(x+BAR_W+4,H-20-nH,BAR_W,nH);
+      ctx.fillStyle="#E60000";ctx.fillRect(x+BAR_W+4,H-20-nH,BAR_W,3);
+      ctx.fillStyle="#555";ctx.font="11px DM Sans,sans-serif";ctx.textAlign="center";
+      ctx.fillText(d.month,x+BAR_W,H-4);
+    });
+    ctx.fillStyle="#00C851";ctx.fillRect(W-130,10,12,12);ctx.fillStyle="#555";ctx.font="11px sans-serif";ctx.textAlign="left";ctx.fillText("Przychody",W-115,21);
+    ctx.fillStyle="#E60000";ctx.fillRect(W-130,28,12,12);ctx.fillStyle="#555";ctx.fillText("Zysk netto",W-115,39);
+  },50);
+
+  const two=h("div",{className:"two-col"});
+
+  // top clients
+  const topCard=h("div",{className:"card"});
+  topCard.appendChild(h("h3",{style:{margin:"0 0 11px",fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:"1.5px",fontWeight:700}},"Top klienci"));
+  state.clients.map(c=>({...c,total:state.payments.filter(p=>p.clientId===c.id&&p.status==="oplacony").reduce((s,p)=>s+p.amount,0)})).sort((a,b)=>b.total-a.total).forEach((c,i)=>{
+    const row2=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"8px 0",borderBottom:"1px solid #1e1e1e"}});
+    row2.appendChild(h("div",{style:{display:"flex",alignItems:"center",gap:8}},h("span",{style:{fontSize:12,color:i===0?"#E60000":"#555",fontWeight:700,width:20,textAlign:"center"}},i===0?"🥇":`#${i+1}`),h("span",{style:{fontSize:13}},c.name)));
+    row2.appendChild(h("span",{style:{fontWeight:800,color:"#E60000",fontFamily:"'Bebas Neue',sans-serif"}},fmt(c.total)));
+    topCard.appendChild(row2);
+  });
+  two.appendChild(topCard);
+
+  // cats
+  const catCard=h("div",{className:"card"});
+  catCard.appendChild(h("h3",{style:{margin:"0 0 11px",fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:"1.5px",fontWeight:700}},"Koszty wg kategorii"));
+  const{totC:tc}=calcs();
+  ["tech","marketing","uslugi","inne"].forEach(cat=>{
+    const t=state.costs.filter(c=>c.category===cat).reduce((s,c)=>s+c.amount,0);
+    const p=tc?Math.round((t/tc)*100):0;
+    const col={tech:"#4DA6FF",marketing:"#E60000",uslugi:"#00C851",inne:"#555"}[cat];
+    const div=h("div",{style:{marginBottom:10}});
+    const r=h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:3}});
+    r.appendChild(h("span",{style:{fontSize:13,textTransform:"capitalize"}},cat));
+    r.appendChild(h("span",{style:{fontSize:13,fontWeight:700,color:col}},fmt(t)," ",h("span",{style:{color:"#555",fontWeight:400}},`(${p}%)`)));
+    div.appendChild(r);
+    const bar=h("div",{style:{height:4,background:"#1e1e1e",borderRadius:2}});
+    bar.appendChild(h("div",{style:{height:"100%",background:col,borderRadius:2,width:`${p}%`}}));
+    div.appendChild(bar);catCard.appendChild(div);
+  });
+  catCard.appendChild(h("div",{style:{marginTop:12,padding:11,background:"#0a0a0a",borderRadius:8,display:"flex",justifyContent:"space-between",alignItems:"center"}},
+    h("span",{style:{fontSize:11,color:"#555",textTransform:"uppercase",letterSpacing:1}},"Marża netto"),
+    h("span",{style:{fontSize:22,fontWeight:800,color:"#00C851",fontFamily:"'Bebas Neue',sans-serif"}},`${totR?Math.round((net/totR)*100):0}%`)
+  ));
+  two.appendChild(catCard);
+  el.appendChild(two);
+  return el;
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────
+function renderModal(){
+  if(!state.modal)return null;
+  const{modal,form,clients}=state;
+
+  const bg=h("div",{className:"modal-bg"});
+  bg.onclick=()=>setState({modal:null,form:{}});
+  const box=h("div",{className:"modal-box"});
+  box.onclick=e=>e.stopPropagation();
+
+  const titleMap={payment:form.id?"EDYTUJ PŁATNOŚĆ":"NOWA PŁATNOŚĆ",cost:form.id?"EDYTUJ KOSZT":"NOWY KOSZT",client:form.id?"EDYTUJ KLIENTA":"NOWY KLIENT"};
+  const hdr=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:18}});
+  hdr.appendChild(h("h3",{style:{margin:0,fontSize:15,fontFamily:"'Bebas Neue',sans-serif",letterSpacing:1.5}},titleMap[modal]));
+  const xBtn=h("button",{style:{background:"none",border:"none",color:"#555",fontSize:20,cursor:"pointer"}},"✕");
+  xBtn.onclick=()=>setState({modal:null,form:{}});
+  hdr.appendChild(xBtn);box.appendChild(hdr);
+
+  if(modal==="payment"){
+    // client select
+    const cSel=h("select",{className:"field-select"});
+    cSel.appendChild(Object.assign(document.createElement("option"),{value:"",textContent:"Wybierz…"}));
+    clients.forEach(c=>{const o=document.createElement("option");o.value=c.id;o.textContent=c.name;if(String(form.clientId)===String(c.id))o.selected=true;cSel.appendChild(o);});
+    cSel.onchange=e=>form.clientId=e.target.value;
+    box.appendChild(field("Klient *",cSel));
+
+    const r1=row(
+      field("Kwota *",(()=>{const i=h("input",{className:"field-input",type:"number",placeholder:"0",value:form.amount||""});i.oninput=e=>form.amount=e.target.value;return i;})(),true),
+      field("Data *",(()=>{const i=h("input",{className:"field-input",type:"date",value:form.date||""});i.oninput=e=>form.date=e.target.value;return i;})(),true)
+    );
+    box.appendChild(r1);
+
+    const typeSel=h("select",{className:"field-select"});
+    [{v:"gotowka",l:"💳 Przelew"},{v:"produkt",l:"📦 Produkt"}].forEach(o=>{const op=document.createElement("option");op.value=o.v;op.textContent=o.l;if((form.type||"gotowka")===o.v)op.selected=true;typeSel.appendChild(op);});
+    typeSel.onchange=e=>form.type=e.target.value;
+    const stSel=h("select",{className:"field-select"});
+    [{v:"oczekujacy",l:"Oczekuje"},{v:"nadchodzacy",l:"Nadchodzi"},{v:"oplacony",l:"Opłacony"}].forEach(o=>{const op=document.createElement("option");op.value=o.v;op.textContent=o.l;if((form.status||"oczekujacy")===o.v)op.selected=true;stSel.appendChild(op);});
+    stSel.onchange=e=>form.status=e.target.value;
+    box.appendChild(row(field("Forma",typeSel,true),field("Status",stSel,true)));
+
+    const noteI=h("input",{className:"field-input",placeholder:"np. Maj…",value:form.note||""});
+    noteI.oninput=e=>form.note=e.target.value;
+    box.appendChild(field("Notatka",noteI));
+
+    const btns=h("div",{style:{display:"flex",gap:10,justifyContent:"flex-end",marginTop:12}});
+    const cancel=h("button",{className:"btn-ghost"},"Anuluj");cancel.onclick=()=>setState({modal:null,form:{}});
+    const save=h("button",{className:"btn-red"},"Zapisz");
+    save.onclick=()=>{
+      if(!form.clientId||!form.amount||!form.date){toast("Wypełnij wymagane pola","error");return;}
+      const r={id:form.id||uid(),clientId:+form.clientId,amount:+form.amount,date:form.date,status:form.status||"oczekujacy",type:form.type||"gotowka",note:form.note||""};
+      state.payments=form.id?state.payments.map(p=>p.id===form.id?r:p):[...state.payments,r];
+      toast(form.id?"Zaktualizowano":"Dodano");setState({modal:null,form:{}});
+    };
+    btns.appendChild(cancel);btns.appendChild(save);box.appendChild(btns);
+  }
+
+  if(modal==="cost"){
+    const nameI=h("input",{className:"field-input",placeholder:"np. Hosting…",value:form.name||""});nameI.oninput=e=>form.name=e.target.value;box.appendChild(field("Nazwa *",nameI));
+    const amtI=h("input",{className:"field-input",type:"number",placeholder:"0",value:form.amount||""});amtI.oninput=e=>form.amount=e.target.value;
+    const catSel=h("select",{className:"field-select"});
+    ["tech","marketing","uslugi","inne"].forEach(v=>{const o=document.createElement("option");o.value=v;o.textContent=v;if((form.category||"inne")===v)o.selected=true;catSel.appendChild(o);});
+    catSel.onchange=e=>form.category=e.target.value;
+    box.appendChild(row(field("Kwota *",amtI,true),field("Kategoria",catSel,true)));
+    const dateI=h("input",{className:"field-input",type:"date",value:form.date||""});dateI.oninput=e=>form.date=e.target.value;
+    const recSel=h("select",{className:"field-select"});
+    [{v:"nie",l:"Jednorazowy"},{v:"tak",l:"🔄 Cykliczny"}].forEach(o=>{const op=document.createElement("option");op.value=o.v;op.textContent=o.l;if((form.recurring||"nie")===o.v)op.selected=true;recSel.appendChild(op);});
+    recSel.onchange=e=>form.recurring=e.target.value;
+    box.appendChild(row(field("Data",dateI,true),field("Typ",recSel,true)));
+    const btns=h("div",{style:{display:"flex",gap:10,justifyContent:"flex-end",marginTop:12}});
+    const cancel=h("button",{className:"btn-ghost"},"Anuluj");cancel.onclick=()=>setState({modal:null,form:{}});
+    const save=h("button",{className:"btn-red"},"Zapisz");
+    save.onclick=()=>{
+      if(!form.name||!form.amount){toast("Wypełnij wymagane pola","error");return;}
+      const r={id:form.id||uid(),name:form.name,amount:+form.amount,category:form.category||"inne",date:form.date||TODAY.toISOString().slice(0,10),recurring:form.recurring==="tak"};
+      state.costs=form.id?state.costs.map(c=>c.id===form.id?r:c):[...state.costs,r];
+      toast(form.id?"Zaktualizowano":"Dodano");setState({modal:null,form:{}});
+    };
+    btns.appendChild(cancel);btns.appendChild(save);box.appendChild(btns);
+  }
+
+  if(modal==="client"){
+    const nameI=h("input",{className:"field-input",placeholder:"np. TechGear Pro…",value:form.name||""});nameI.oninput=e=>form.name=e.target.value;box.appendChild(field("Nazwa *",nameI));
+    const typeSel=h("select",{className:"field-select"});
+    [{v:"miesieczny",l:"💰 Miesięczna"},{v:"prowizja",l:"% Prowizja"},{v:"mix",l:"🔀 Mix"}].forEach(o=>{const op=document.createElement("option");op.value=o.v;op.textContent=o.l;if((form.type||"miesieczny")===o.v)op.selected=true;typeSel.appendChild(op);});
+    typeSel.onchange=e=>form.type=e.target.value;
+    const rateI=h("input",{className:"field-input",type:"number",placeholder:"0",value:form.rate||""});rateI.oninput=e=>form.rate=e.target.value;
+    box.appendChild(row(field("Typ",typeSel,true),field("Stawka",rateI,true)));
+    const notesI=h("input",{className:"field-input",placeholder:"Warunki, kontakt…",value:form.notes||""});notesI.oninput=e=>form.notes=e.target.value;box.appendChild(field("Notatki",notesI));
+    const btns=h("div",{style:{display:"flex",gap:10,justifyContent:"flex-end",marginTop:12}});
+    const cancel=h("button",{className:"btn-ghost"},"Anuluj");cancel.onclick=()=>setState({modal:null,form:{}});
+    const save=h("button",{className:"btn-red"},"Zapisz");
+    save.onclick=()=>{
+      if(!form.name){toast("Podaj nazwę","error");return;}
+      const r={id:form.id||uid(),name:form.name,type:form.type||"miesieczny",rate:+form.rate||0,status:"aktywny",notes:form.notes||""};
+      state.clients=form.id?state.clients.map(c=>c.id===form.id?r:c):[...state.clients,r];
+      toast(form.id?"Zaktualizowano":"Dodano");setState({modal:null,form:{}});
+    };
+    btns.appendChild(cancel);btns.appendChild(save);box.appendChild(btns);
+  }
+
+  bg.appendChild(box);
+  return bg;
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function render(){
+  const app=document.getElementById("app");
+  app.innerHTML="";
+
+  if(!state.loggedIn){app.appendChild(renderLogin());return;}
+
+  // nav
+  const nav=h("nav",{style:{background:"#0d0d0d",borderBottom:"1px solid #222",padding:"0 18px",display:"flex",alignItems:"center",position:"sticky",top:0,zIndex:200}});
+  nav.appendChild(h("div",{style:{marginRight:14,padding:"10px 0",flexShrink:0,display:"flex",alignItems:"center",gap:7}},
+    h("div",{style:{width:24,height:24,background:"#E60000",borderRadius:5,display:"flex",alignItems:"center",justifyContent:"center",fontWeight:900,fontSize:13,color:"#fff",fontFamily:"'Bebas Neue',sans-serif"}},"A"),
+    h("span",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:17,letterSpacing:2}},
+      "AFFILIATE",h("span",{style:{color:"#E60000"}},"DESK")
+    ),
+    h("span",{style:{background:"#E60000",fontSize:8,fontWeight:800,padding:"1px 5px",borderRadius:3}},"PRO")
+  ));
+
+  const TABS=[{id:"dashboard",icon:"◈",label:"Přehled"},{id:"payments",icon:"◎",label:"Płatności"},{id:"clients",icon:"◉",label:"Klienci"},{id:"costs",icon:"◌",label:"Koszty"},{id:"split",icon:"◑",label:"Podział"},{id:"analytics",icon:"◐",label:"Analizy"}];
+  // fix labels
+  TABS[0].label="Przegląd";
+
+  const tabsDiv=h("div",{className:"nav-tabs"});
+  const odC=state.payments.filter(p=>p.status==="oczekujacy"&&dU(p.date)<0).length;
+  TABS.forEach(t=>{
+    const active=state.tab===t.id;
+    const btn=h("button",{style:{background:active?"#150000":"none",border:"none",color:active?"#E60000":"#555",padding:"14px 11px",cursor:"pointer",fontSize:11,fontWeight:700,fontFamily:"inherit",borderBottom:active?"2px solid #E60000":"2px solid transparent",display:"flex",alignItems:"center",gap:4,whiteSpace:"nowrap"}},t.icon," ",t.label);
+    if(t.id==="payments"&&odC>0)btn.appendChild(h("span",{style:{background:"#E60000",color:"#fff",borderRadius:10,padding:"1px 5px",fontSize:10,fontWeight:800}},String(odC)));
+    btn.onclick=()=>setState({tab:t.id,mob:false});
+    tabsDiv.appendChild(btn);
+  });
+  nav.appendChild(tabsDiv);
+
+  const rightBtns=h("div",{style:{display:"flex",gap:6,marginLeft:"auto",alignItems:"center"}});
+  const copyBtn=h("button",{className:"btn-ghost",style:{fontSize:11,padding:"5px 10px"}},"🔔 Kopiuj");
+  copyBtn.onclick=()=>{
+    const ov=state.payments.filter(p=>p.status==="oczekujacy"&&dU(p.date)<0);
+    const ds=state.payments.filter(p=>p.status==="oczekujacy"&&dU(p.date)>=0&&dU(p.date)<=7);
+    const cm=clientMap();
+    const txt=["📊 PRZYPOMNIENIA","Data: "+fmtDate(TODAY.toISOString().slice(0,10)),"",
+      ...(ov.length?["🔴 ZALEGŁE:",...ov.map(p=>`  • ${cm[p.clientId]?.name} — ${fmt(p.amount)}`)]:[] ),
+      ...(ds.length?["\n🟡 NADCHODZĄCE:",...ds.map(p=>`  • ${cm[p.clientId]?.name} — ${fmt(p.amount)} (za ${dU(p.date)}d)`)]:[] )
+    ].join("\n");
+    navigator.clipboard.writeText(txt).then(()=>toast("Skopiowano 📋"));
+  };
+  rightBtns.appendChild(copyBtn);
+  const logoutBtn=h("button",{className:"btn-ghost",style:{fontSize:11,padding:"5px 10px",borderColor:"#3a0000",color:"#FF4444"}},"🔓 Wyloguj");
+  logoutBtn.onclick=()=>setState({loggedIn:false});
+  rightBtns.appendChild(logoutBtn);
+  nav.appendChild(rightBtns);
+
+  const mobBtn=h("button",{style:{marginLeft:8,background:"none",border:"1px solid #2a2a2a",color:"#fff",borderRadius:8,padding:"7px 11px",cursor:"pointer",display:"none",alignItems:"center",fontSize:13,fontWeight:700,fontFamily:"inherit"}},"☰");
+  mobBtn.className="mob-btn";
+  mobBtn.onclick=()=>setState({mob:!state.mob});
+  nav.appendChild(mobBtn);
+  app.appendChild(nav);
+
+  // mob menu
+  if(state.mob){
+    const mm=h("div",{className:"mob-menu"});
+    TABS.forEach(t=>{
+      const active=state.tab===t.id;
+      const btn=h("button",{style:{display:"block",width:"100%",background:active?"#150000":"none",border:"none",color:active?"#E60000":"#aaa",padding:"11px 14px",textAlign:"left",cursor:"pointer",fontSize:13,fontFamily:"inherit",borderRadius:8,fontWeight:700}},t.icon," ",t.label);
+      btn.onclick=()=>setState({tab:t.id,mob:false});
+      mm.appendChild(btn);
+    });
+    const mbtns=h("div",{style:{borderTop:"1px solid #222",marginTop:8,paddingTop:8,display:"flex",gap:8}});
+    const mc=h("button",{className:"btn-ghost",style:{fontSize:11}},"🔔");mc.onclick=copyBtn.onclick;
+    const ml=h("button",{className:"btn-ghost",style:{fontSize:11,color:"#FF4444"}},"🔓 Wyloguj");ml.onclick=()=>setState({loggedIn:false});
+    mbtns.appendChild(mc);mbtns.appendChild(ml);mm.appendChild(mbtns);
+    app.appendChild(mm);
+  }
+
+  // main
+  const main=h("div",{style:{padding:"18px",maxWidth:1100,margin:"0 auto"}});
+
+  // reminder banner
+  const cm2=clientMap();
+  const ov2=state.payments.filter(p=>p.status==="oczekujacy"&&dU(p.date)<0);
+  const ds2=state.payments.filter(p=>p.status==="oczekujacy"&&dU(p.date)>=0&&dU(p.date)<=3);
+  if(ov2.length||ds2.length){
+    const banner=h("div",{style:{background:"#120000",border:"1px solid rgba(230,0,0,.27)",borderLeft:"3px solid #E60000",borderRadius:10,padding:"12px 16px",marginBottom:16,display:"flex",gap:10}});
+    banner.appendChild(h("span",{style:{fontSize:16,flexShrink:0}},"🔔"));
+    const bd=h("div",{});
+    if(ov2.length)bd.appendChild(h("div",{style:{color:"#FF6666",fontSize:13,fontWeight:700,marginBottom:2}},`ZALEGŁE (${ov2.length}): ${ov2.map(p=>`${cm2[p.clientId]?.name} ${fmt(p.amount)}`).join(" · ")}`));
+    if(ds2.length)bd.appendChild(h("div",{style:{color:"#FFB300",fontSize:12}},`Terminy ≤3 dni: ${ds2.map(p=>`${cm2[p.clientId]?.name} — ${fmt(p.amount)} (${dU(p.date)===0?"DZIŚ!":"za "+dU(p.date)+"d"})`).join(" · ")}`));
+    banner.appendChild(bd);main.appendChild(banner);
+  }
+
+  // hint
+  main.appendChild(h("div",{style:{background:"#111",border:"1px solid #222",borderRadius:8,padding:"7px 13px",marginBottom:14,fontSize:11,color:"#555",display:"flex",alignItems:"center",gap:7}},
+    h("span",{style:{color:"#E60000"}},"✎"),
+    h("span",{},h("b",{style:{color:"#aaa"}},"Inline editing:")," kliknij dowolną wartość → edytuj → Enter lub kliknij poza polem.")
+  ));
+
+  // tab content
+  const tabEl={dashboard:renderDashboard,payments:renderPayments,clients:renderClients,costs:renderCosts,split:renderSplit,analytics:renderAnalytics}[state.tab];
+  if(tabEl)main.appendChild(tabEl());
+  app.appendChild(main);
+
+  // modal
+  const modalEl=renderModal();
+  if(modalEl)app.appendChild(modalEl);
+
+  // toasts
+  if(state.toasts.length){
+    const tc=h("div",{className:"toast-container"});
+    state.toasts.forEach(t=>{
+      const ok=t.type!=="error";
+      tc.appendChild(h("div",{className:"toast",style:{background:ok?"#001a08":"#1a0000",border:`1px solid ${ok?"#00C85155":"#FF444466"}`,color:ok?"#00C851":"#FF6666"}},ok?"✓ ":"⚠ ",t.msg));
+    });
+    app.appendChild(tc);
+  }
+}
+
+render();
 </script>
-
 </body>
 </html>
