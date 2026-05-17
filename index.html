@@ -85,7 +85,7 @@ const PASSWORD = "Kako#9Rx!mZ4@vQ";
 const DEFAULT_DATA = {
   clients:[{id:1,name:"TechGear Pro",type:"prowizja",rate:12,status:"aktywny",notes:"12% od sprzedaży"},{id:2,name:"FashionHub",type:"prowizja",rate:8,status:"aktywny",notes:"8% od sprzedaży"},{id:3,name:"NutriBrand",type:"prowizja",rate:15,status:"aktywny",notes:"15% od sprzedaży"},{id:4,name:"StyleCo",type:"miesieczny",rate:2400,status:"aktywny",notes:"Stała miesięczna"},{id:5,name:"GadgetWorld",type:"miesieczny",rate:1800,status:"aktywny",notes:"Częściowo w produktach"},{id:6,name:"BeautyLine",type:"miesieczny",rate:1200,status:"oczekujacy",notes:"Negocjacje"}],
   payments:[{id:1,clientId:1,amount:8400,date:"2026-04-15",status:"oplacony",type:"gotowka",note:"Kwiecień"},{id:2,clientId:2,amount:3200,date:"2026-04-22",status:"oplacony",type:"gotowka",note:"Kwiecień"},{id:3,clientId:4,amount:2400,date:"2026-05-01",status:"oplacony",type:"gotowka",note:"Maj"},{id:4,clientId:5,amount:900,date:"2026-05-01",status:"oplacony",type:"produkt",note:"Słuchawki"},{id:5,clientId:5,amount:900,date:"2026-05-01",status:"oplacony",type:"gotowka",note:"Reszta maja"},{id:6,clientId:3,amount:6750,date:"2026-05-10",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:7,clientId:1,amount:9100,date:"2026-05-15",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:8,clientId:2,amount:2900,date:"2026-05-22",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:9,clientId:4,amount:2400,date:"2026-06-01",status:"nadchodzacy",type:"gotowka",note:"Czerwiec"},{id:10,clientId:6,amount:1200,date:"2026-06-01",status:"nadchodzacy",type:"gotowka",note:"Start"}],
-  costs:[{id:1,name:"Hosting & domeny",amount:180,category:"tech",date:"2026-05-01",recurring:true},{id:2,name:"Narzędzia marketingowe",amount:320,category:"tech",date:"2026-05-01",recurring:true},{id:3,name:"Obsługa księgowa",amount:450,category:"uslugi",date:"2026-05-05",recurring:true},{id:4,name:"Reklama własna",amount:600,category:"marketing",date:"2026-05-08",recurring:false},{id:5,name:"Sprzęt biurowy",amount:240,category:"inne",date:"2026-04-20",recurring:false}],
+  costs:[{id:1,name:"Hosting & domeny",amount:180,category:"tech",date:"2026-05-01",recurring:true,paid:true},{id:2,name:"Narzędzia marketingowe",amount:320,category:"tech",date:"2026-05-01",recurring:true,paid:true},{id:3,name:"Obsługa księgowa",amount:450,category:"uslugi",date:"2026-05-05",recurring:true,paid:false},{id:4,name:"Reklama własna",amount:600,category:"marketing",date:"2026-05-08",recurring:false,paid:false},{id:5,name:"Sprzęt biurowy",amount:240,category:"inne",date:"2026-04-20",recurring:false,paid:true}],
   splitConfig:{a:50,b:25,c:25,nameA:"Wspólnik A",nameB:"Wspólnik B",nameC:"Wspólnik C"}
 };
 const HIST=[{month:"Sty",revenue:19800,costs:1200},{month:"Lut",revenue:22600,costs:1350},{month:"Mar",revenue:17400,costs:1550},{month:"Kwi",revenue:25200,costs:1490}];
@@ -566,22 +566,43 @@ function renderCosts(){
   const hdr=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12,flexWrap:"wrap",gap:10}});
   hdr.appendChild(h("div",{},h("h2",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:24,margin:0,letterSpacing:2,color:"var(--text)"}},"KOSZTY"),h("p",{style:{color:"var(--dim)",margin:"2px 0 0",fontSize:12}},"Kliknij komórkę aby edytować")));
   const addBtn=h("button",{className:"btn-red"},"+ Dodaj koszt");addBtn.onclick=()=>setState({modal:"cost",form:{}});hdr.appendChild(addBtn);el.appendChild(hdr);
-  const kg=h("div",{className:"three-col",style:{marginBottom:14}});
+  const paidSum=state.costs.filter(c=>c.paid!==false).reduce((s,c)=>s+c.amount,0);
+  const unpaidSum=state.costs.filter(c=>c.paid===false).reduce((s,c)=>s+c.amount,0);
+  const unpaidCount=state.costs.filter(c=>c.paid===false).length;
+  const kg=h("div",{className:"kpi-grid",style:{marginBottom:14}});
   kg.appendChild(kpi("Razem koszty",fmt(totC),`${state.costs.length} pozycji`,"#E60000","💸"));
-  kg.appendChild(kpi("Cykliczne/mies.",fmt(state.costs.filter(c=>c.recurring).reduce((s,c)=>s+c.amount,0)),"co miesiąc","#FFB300","🔄"));
-  kg.appendChild(kpi("Jednorazowe",fmt(state.costs.filter(c=>!c.recurring).reduce((s,c)=>s+c.amount,0)),"nieregularne","#4DA6FF","📋"));
+  kg.appendChild(kpi("Opłacone",fmt(paidSum),`${state.costs.length-unpaidCount} pozycji`,"#00C851","✅"));
+  kg.appendChild(kpi("Do zapłaty",fmt(unpaidSum),`${unpaidCount} pozycji`,"#FFB300","⏳"));
+  kg.appendChild(kpi("Cykliczne/mies.",fmt(state.costs.filter(c=>c.recurring).reduce((s,c)=>s+c.amount,0)),"co miesiąc","#4DA6FF","🔄"));
   el.appendChild(kg);
+
+  // bulk action — oznacz wszystkie nieopłacone jako opłacone
+  if(unpaidCount>0){
+    const bulkRow=h("div",{style:{display:"flex",justifyContent:"flex-end",marginBottom:10}});
+    const bulk=h("button",{className:"filter-btn",style:{background:"#001a0a",borderColor:"#00C85155",color:"#00C851"}},`✓ Oznacz wszystkie ${unpaidCount} jako opłacone`);
+    bulk.onclick=()=>confirmDelete(`Oznaczyć ${unpaidCount} kosztów jako opłacone?`,()=>{state.costs=state.costs.map(c=>c.paid===false?{...c,paid:true}:c);saveToFirebase();toast(`Oznaczono ${unpaidCount} kosztów`);render();});
+    bulkRow.appendChild(bulk);el.appendChild(bulkRow);
+  }
+
   const wrap=h("div",{className:"table-wrap",style:{background:"var(--bg1)",border:"1px solid var(--border)",borderRadius:12,overflow:"hidden"}});
   const tbl=h("table",{});
-  tbl.appendChild(h("thead",{},h("tr",{},h("th",{},"Nazwa"),h("th",{},"Kategoria"),h("th",{},"Kwota"),h("th",{},"Data"),h("th",{},"Typ"),h("th",{}))));
+  tbl.appendChild(h("thead",{},h("tr",{},h("th",{},"Nazwa"),h("th",{},"Kategoria"),h("th",{},"Kwota"),h("th",{},"Data"),h("th",{},"Typ"),h("th",{},"Status"),h("th",{}))));
   const tbody=h("tbody",{});
   state.costs.forEach(c=>{
-    const tr=h("tr",{});
-    tr.appendChild(h("td",{style:{fontWeight:600}},editableCell(c.name,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,name:v}:x);saveToFirebase();toast("Zapisano");render();},{w:150})));
+    const isPaid=c.paid!==false;
+    const tr=h("tr",{style:isPaid?{}:{background:state.theme==="light"?"#fff8e6":"#1a1000"}});
+    tr.appendChild(h("td",{style:{fontWeight:600,opacity:isPaid?1:.95}},editableCell(c.name,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,name:v}:x);saveToFirebase();toast("Zapisano");render();},{w:150})));
     tr.appendChild(h("td",{},editableCell(c.category,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,category:v}:x);saveToFirebase();toast("Zapisano");render();},{options:[{v:"tech",l:"Tech"},{v:"marketing",l:"Marketing"},{v:"uslugi",l:"Usługi"},{v:"inne",l:"Inne"}]})));
-    tr.appendChild(h("td",{style:{fontWeight:800,fontFamily:"'Bebas Neue',sans-serif"}},editableCell(c.amount,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,amount:+v}:x);saveToFirebase();toast("Zapisano");render();},{type:"number",color:"#E60000",w:70})));
+    tr.appendChild(h("td",{style:{fontWeight:800,fontFamily:"'Bebas Neue',sans-serif"}},editableCell(c.amount,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,amount:+v}:x);saveToFirebase();toast("Zapisano");render();},{type:"number",color:isPaid?"#E60000":"#FFB300",w:70})));
     tr.appendChild(h("td",{style:{color:"var(--dim)",fontSize:12}},editableCell(c.date,v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,date:v}:x);saveToFirebase();toast("Zapisano");render();},{w:100})));
     tr.appendChild(h("td",{},editableCell(c.recurring?"cykliczny":"jednorazowy",v=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,recurring:v==="cykliczny"}:x);saveToFirebase();toast("Zapisano");render();},{options:[{v:"cykliczny",l:"🔄 Cykliczny"},{v:"jednorazowy",l:"Jednorazowy"}]})));
+    // status toggle
+    const statusBtn=h("button",{style:{background:isPaid?"#001a0a":"#1a1000",color:isPaid?"#00C851":"#FFB300",border:`1px solid ${isPaid?"#00C85155":"#FFB30055"}`,borderRadius:6,padding:"3px 9px",fontSize:11,fontWeight:700,cursor:"pointer",fontFamily:"inherit",display:"inline-flex",alignItems:"center",gap:4},title:isPaid?"Kliknij aby oznaczyć jako do zapłaty":"Kliknij aby oznaczyć jako opłacony"},
+      h("span",{style:{width:5,height:5,borderRadius:"50%",background:isPaid?"#00C851":"#FFB300",display:"inline-block"}}),
+      isPaid?"Opłacony":"Do zapłaty"
+    );
+    statusBtn.onclick=()=>{state.costs=state.costs.map(x=>x.id===c.id?{...x,paid:!isPaid}:x);saveToFirebase();toast(isPaid?"Oznaczono jako do zapłaty":"Opłacone ✓");render();};
+    tr.appendChild(h("td",{},statusBtn));
     const del=h("button",{style:{background:"#1a0000",color:"#FF4444",border:"none",borderRadius:6,padding:"4px 8px",fontSize:11,cursor:"pointer"}},"✕");del.onclick=()=>confirmDelete(`Usunąć koszt "${c.name}" (${fmt(c.amount)})?`,()=>{state.costs=state.costs.filter(x=>x.id!==c.id);saveToFirebase();toast("Usunięto");render();});tr.appendChild(h("td",{},del));tbody.appendChild(tr);
   });
   tbl.appendChild(tbody);wrap.appendChild(tbl);el.appendChild(wrap);return el;
@@ -749,10 +770,12 @@ function renderModal(){
     const dI=h("input",{className:"field-input",type:"date",value:form.date||""});dI.oninput=e=>form.date=e.target.value;
     const rSel=h("select",{className:"field-select"});[{v:"nie",l:"Jednorazowy"},{v:"tak",l:"🔄 Cykliczny"}].forEach(o=>{const op=document.createElement("option");op.value=o.v;op.textContent=o.l;if((form.recurring||"nie")===o.v)op.selected=true;rSel.appendChild(op);});rSel.onchange=e=>form.recurring=e.target.value;
     box.appendChild(row2(field("Data",dI,true),field("Typ",rSel,true)));
+    const pSel=h("select",{className:"field-select"});[{v:"tak",l:"✅ Opłacony"},{v:"nie",l:"⏳ Do zapłaty"}].forEach(o=>{const op=document.createElement("option");op.value=o.v;op.textContent=o.l;if((form.paid===undefined?"tak":(form.paid?"tak":"nie"))===o.v)op.selected=true;pSel.appendChild(op);});pSel.onchange=e=>form.paid=e.target.value==="tak";
+    box.appendChild(field("Status płatności",pSel));
     const btns=h("div",{style:{display:"flex",gap:10,justifyContent:"flex-end",marginTop:12}});
     const cancel=h("button",{className:"btn-ghost"},"Anuluj");cancel.onclick=()=>setState({modal:null,form:{}});
     const save=h("button",{className:"btn-red"},"Zapisz");
-    save.onclick=()=>{if(!form.name||!form.amount){toast("Wypełnij wymagane pola","error");return;}const r={id:form.id||uid(),name:form.name,amount:+form.amount,category:form.category||"inne",date:form.date||TODAY.toISOString().slice(0,10),recurring:form.recurring==="tak"};state.costs=form.id?state.costs.map(c=>c.id===form.id?r:c):[...state.costs,r];saveToFirebase();toast(form.id?"Zaktualizowano":"Dodano");setState({modal:null,form:{}});};
+    save.onclick=()=>{if(!form.name||!form.amount){toast("Wypełnij wymagane pola","error");return;}const r={id:form.id||uid(),name:form.name,amount:+form.amount,category:form.category||"inne",date:form.date||TODAY.toISOString().slice(0,10),recurring:form.recurring==="tak",paid:form.paid!==false};state.costs=form.id?state.costs.map(c=>c.id===form.id?r:c):[...state.costs,r];saveToFirebase();toast(form.id?"Zaktualizowano":"Dodano");setState({modal:null,form:{}});};
     btns.appendChild(cancel);btns.appendChild(save);box.appendChild(btns);
   }
   if(modal==="client"){
