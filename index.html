@@ -86,7 +86,7 @@ const DEFAULT_DATA = {
   clients:[{id:1,name:"TechGear Pro",type:"prowizja",rate:12,status:"aktywny",notes:"12% od sprzedaży"},{id:2,name:"FashionHub",type:"prowizja",rate:8,status:"aktywny",notes:"8% od sprzedaży"},{id:3,name:"NutriBrand",type:"prowizja",rate:15,status:"aktywny",notes:"15% od sprzedaży"},{id:4,name:"StyleCo",type:"miesieczny",rate:2400,status:"aktywny",notes:"Stała miesięczna"},{id:5,name:"GadgetWorld",type:"miesieczny",rate:1800,status:"aktywny",notes:"Częściowo w produktach"},{id:6,name:"BeautyLine",type:"miesieczny",rate:1200,status:"oczekujacy",notes:"Negocjacje"}],
   payments:[{id:1,clientId:1,amount:8400,date:"2026-04-15",status:"oplacony",type:"gotowka",note:"Kwiecień"},{id:2,clientId:2,amount:3200,date:"2026-04-22",status:"oplacony",type:"gotowka",note:"Kwiecień"},{id:3,clientId:4,amount:2400,date:"2026-05-01",status:"oplacony",type:"gotowka",note:"Maj"},{id:4,clientId:5,amount:900,date:"2026-05-01",status:"oplacony",type:"produkt",note:"Słuchawki"},{id:5,clientId:5,amount:900,date:"2026-05-01",status:"oplacony",type:"gotowka",note:"Reszta maja"},{id:6,clientId:3,amount:6750,date:"2026-05-10",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:7,clientId:1,amount:9100,date:"2026-05-15",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:8,clientId:2,amount:2900,date:"2026-05-22",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:9,clientId:4,amount:2400,date:"2026-06-01",status:"nadchodzacy",type:"gotowka",note:"Czerwiec"},{id:10,clientId:6,amount:1200,date:"2026-06-01",status:"nadchodzacy",type:"gotowka",note:"Start"}],
   costs:[{id:1,name:"Hosting & domeny",amount:180,category:"tech",date:"2026-05-01",recurring:true,paid:true},{id:2,name:"Narzędzia marketingowe",amount:320,category:"tech",date:"2026-05-01",recurring:true,paid:true},{id:3,name:"Obsługa księgowa",amount:450,category:"uslugi",date:"2026-05-05",recurring:true,paid:false},{id:4,name:"Reklama własna",amount:600,category:"marketing",date:"2026-05-08",recurring:false,paid:false},{id:5,name:"Sprzęt biurowy",amount:240,category:"inne",date:"2026-04-20",recurring:false,paid:true}],
-  splitConfig:{a:50,b:25,c:25,nameA:"Wspólnik A",nameB:"Wspólnik B",nameC:"Wspólnik C"}
+  splitConfig:{a:37.5,b:62.5,c:0,nameA:"Janchol",nameB:"Ponur",nameC:""}
 };
 const HIST=[{month:"Sty",revenue:19800,costs:1200},{month:"Lut",revenue:22600,costs:1350},{month:"Mar",revenue:17400,costs:1550},{month:"Kwi",revenue:25200,costs:1490}];
 
@@ -126,7 +126,7 @@ let state={
   loggedIn:!!getCookie("affd_auth"),
   loading:true,syncing:false,
   tab:"dashboard",
-  clients:[],payments:[],costs:[],splitConfig:{a:50,b:25,c:25,nameA:"Wspólnik A",nameB:"Wspólnik B",nameC:"Wspólnik C"},
+  clients:[],payments:[],costs:[],splitConfig:{a:37.5,b:62.5,c:0,nameA:"Janchol",nameB:"Ponur",nameC:""},
   modal:null,form:{},
   pf:"wszystkie",mob:false,toasts:[],
   search:"",dateFrom:"",dateTo:"",
@@ -160,6 +160,12 @@ async function initFirebase(){
       const d=snap.data();
       state.clients=d.clients||[];state.payments=d.payments||[];state.costs=d.costs||[];
       state.splitConfig=d.splitConfig||DEFAULT_DATA.splitConfig;
+      // migracja: usunięcie 3. wspólnika (matipapi)
+      const sc=state.splitConfig;
+      if(!sc.migrated2p){
+        state.splitConfig={a:37.5,b:62.5,c:0,nameA:"Janchol",nameB:"Ponur",nameC:"",migrated2p:true};
+        saveToFirebase();
+      }
     }
   }catch(e){
     Object.assign(state,JSON.parse(JSON.stringify(DEFAULT_DATA)));
@@ -424,7 +430,7 @@ function renderDashboard(){
   grid.appendChild(kpi("Przychody (opłacone)",fmt(totR),`${paid.length} faktur`,"#00C851","💰"));
   grid.appendChild(kpi("Oczekuje na wpłatę",fmt(totP),`${pend.length} faktur`,"#FFB300","⏳"));
   grid.appendChild(kpi("Koszty operacyjne",fmt(totC),`${state.costs.length} pozycji`,"#E60000","📉"));
-  grid.appendChild(kpi("Zysk netto",fmt(net),`${state.splitConfig.a}/${state.splitConfig.b}/${state.splitConfig.c}`,"#4DA6FF","📈"));
+  grid.appendChild(kpi("Zysk netto",fmt(net),`${state.splitConfig.a}/${state.splitConfig.b}`,"#4DA6FF","📈"));
   el.appendChild(grid);
 
   // ── PORÓWNANIE MIESIĄC DO MIESIĄCA ─────────────────────────────────────
@@ -497,7 +503,7 @@ function renderDashboard(){
   eq.appendChild(h("span",{},`${fmt(totR)} − ${fmt(totC)}`));eq.appendChild(h("span",{style:{color:"#4DA6FF",fontWeight:800,fontFamily:"'Bebas Neue',sans-serif"}},fmt(net)));
   splitCard.appendChild(eq);
   const sc=state.splitConfig;
-  [{n:sc.nameA,p:sc.a,a:sp.a,c:"#E60000"},{n:sc.nameB,p:sc.b,a:sp.b,c:"#00C851"},{n:sc.nameC,p:sc.c,a:sp.c,c:"#4DA6FF"}].forEach(s=>{
+  [{n:sc.nameA,p:sc.a,a:sp.a,c:"#E60000"},{n:sc.nameB,p:sc.b,a:sp.b,c:"#00C851"}].forEach(s=>{
     const sr=h("div",{style:{marginBottom:10}});
     const sr2=h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:3}});
     sr2.appendChild(h("span",{style:{fontSize:13,color:"var(--text)"}},s.n+" ",h("span",{style:{color:"var(--dim)"}},`${s.p}%`)));
@@ -698,9 +704,9 @@ function renderSplit(){
   // konfig procentów
   const cfgCard=h("div",{className:"card",style:{marginBottom:14}});
   cfgCard.appendChild(h("h3",{style:{margin:"0 0 11px",fontSize:11,color:"var(--dim)",textTransform:"uppercase",letterSpacing:"1.5px",fontWeight:700}},"⚙️ Konfiguracja podziału"));
-  const sum=sc.a+sc.b+sc.c;
-  const cfgGrid=h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:12}});
-  [["A","a","#E60000"],["B","b","#00C851"],["C","c","#4DA6FF"]].forEach(([letter,k,col])=>{
+  const sum=sc.a+sc.b;
+  const cfgGrid=h("div",{style:{display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:12}});
+  [["A","a","#E60000"],["B","b","#00C851"]].forEach(([letter,k,col])=>{
     const card=h("div",{style:{background:"var(--bg0)",borderRadius:8,padding:12}});
     card.appendChild(h("div",{style:{fontSize:10,color:"var(--dim)",marginBottom:6,letterSpacing:1.2,textTransform:"uppercase",fontWeight:600}},`Wspólnik ${letter}`));
     const nameInp=h("input",{className:"field-input",value:sc["name"+letter],style:{marginBottom:6,fontSize:13,padding:"6px 9px"}});
@@ -723,8 +729,8 @@ function renderSplit(){
     if(x.sep)eb.appendChild(h("div",{style:{fontSize:20,color:"var(--dim)",padding:"0 6px",flexShrink:0}},x.sep));
     else eb.appendChild(h("div",{style:{textAlign:"center",padding:"0 10px",flexShrink:0}},h("div",{style:{fontSize:10,color:"var(--dim)",marginBottom:4,textTransform:"uppercase",letterSpacing:"1.2px",whiteSpace:"nowrap"}},x.l),h("div",{style:{fontSize:18,fontWeight:800,color:x.c,fontFamily:"'Bebas Neue',sans-serif"}},x.v)));
   });el.appendChild(eb);
-  const grid=h("div",{className:"three-col"});
-  [{n:sc.nameA,p:sc.a,a:sp.a,c:"#E60000",icon:"👑"},{n:sc.nameB,p:sc.b,a:sp.b,c:"#00C851",icon:"◈"},{n:sc.nameC,p:sc.c,a:sp.c,c:"#4DA6FF",icon:"◈"}].forEach(s=>{
+  const grid=h("div",{className:"two-col"});
+  [{n:sc.nameA,p:sc.a,a:sp.a,c:"#E60000",icon:"👑"},{n:sc.nameB,p:sc.b,a:sp.b,c:"#00C851",icon:"👑"}].forEach(s=>{
     grid.appendChild(h("div",{style:{background:"var(--bg1)",border:`1px solid ${s.c}33`,borderTop:`3px solid ${s.c}`,borderRadius:14,padding:"18px 16px",textAlign:"center"}},
       h("div",{style:{fontSize:20,marginBottom:6}},s.icon),h("div",{style:{fontSize:11,color:"var(--dim)",marginBottom:3,textTransform:"uppercase",letterSpacing:1}},s.n),
       h("div",{style:{fontSize:26,fontWeight:800,color:s.c,fontFamily:"'Bebas Neue',sans-serif"}},fmt(s.a)),
