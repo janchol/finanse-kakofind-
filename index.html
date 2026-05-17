@@ -81,7 +81,7 @@ const fbApp = initializeApp(firebaseConfig);
 const db = getFirestore(fbApp);
 const DATA_DOC = doc(db, "app", "data");
 
-const PASSWORD = "Kako#9Rx!mZ4@vQ";
+const PASSWORD = "KakoPay#7Bz!mQ4@vN";
 const DEFAULT_DATA = {
   clients:[{id:1,name:"TechGear Pro",type:"prowizja",rate:12,status:"aktywny",notes:"12% od sprzedaży"},{id:2,name:"FashionHub",type:"prowizja",rate:8,status:"aktywny",notes:"8% od sprzedaży"},{id:3,name:"NutriBrand",type:"prowizja",rate:15,status:"aktywny",notes:"15% od sprzedaży"},{id:4,name:"StyleCo",type:"miesieczny",rate:2400,status:"aktywny",notes:"Stała miesięczna"},{id:5,name:"GadgetWorld",type:"miesieczny",rate:1800,status:"aktywny",notes:"Częściowo w produktach"},{id:6,name:"BeautyLine",type:"miesieczny",rate:1200,status:"oczekujacy",notes:"Negocjacje"}],
   payments:[{id:1,clientId:1,amount:8400,date:"2026-04-15",status:"oplacony",type:"gotowka",note:"Kwiecień"},{id:2,clientId:2,amount:3200,date:"2026-04-22",status:"oplacony",type:"gotowka",note:"Kwiecień"},{id:3,clientId:4,amount:2400,date:"2026-05-01",status:"oplacony",type:"gotowka",note:"Maj"},{id:4,clientId:5,amount:900,date:"2026-05-01",status:"oplacony",type:"produkt",note:"Słuchawki"},{id:5,clientId:5,amount:900,date:"2026-05-01",status:"oplacony",type:"gotowka",note:"Reszta maja"},{id:6,clientId:3,amount:6750,date:"2026-05-10",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:7,clientId:1,amount:9100,date:"2026-05-15",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:8,clientId:2,amount:2900,date:"2026-05-22",status:"oczekujacy",type:"gotowka",note:"Maj"},{id:9,clientId:4,amount:2400,date:"2026-06-01",status:"nadchodzacy",type:"gotowka",note:"Czerwiec"},{id:10,clientId:6,amount:1200,date:"2026-06-01",status:"nadchodzacy",type:"gotowka",note:"Start"}],
