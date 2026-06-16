@@ -103,7 +103,7 @@ function delCookie(name){document.cookie=`${name}=;expires=Thu, 01 Jan 1970 00:0
 
 const fmt=n=>new Intl.NumberFormat("pl-PL",{style:"currency",currency:"PLN",maximumFractionDigits:0}).format(n||0);
 const fmtDate=d=>new Date(d).toLocaleDateString("pl-PL",{day:"2-digit",month:"short",year:"numeric"});
-const TODAY=new Date("2026-05-13");
+const TODAY=new Date();
 const dU=d=>Math.ceil((new Date(d)-TODAY)/86400000);
 const uid=()=>Date.now()+Math.random();
 
@@ -424,7 +424,8 @@ function renderDashboard(){
   const fc=calcForecast();
   const cm=clientMap();
   const el=h("div",{});
-  el.appendChild(h("h1",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,margin:"0 0 3px",letterSpacing:2,color:"var(--text)"}},"PRZEGLĄD — MAJ 2026"));
+  const mNamesLong=["Styczeń","Luty","Marzec","Kwiecień","Maj","Czerwiec","Lipiec","Sierpień","Wrzesień","Październik","Listopad","Grudzień"];
+  el.appendChild(h("h1",{style:{fontFamily:"'Bebas Neue',sans-serif",fontSize:26,margin:"0 0 3px",letterSpacing:2,color:"var(--text)"}},`PRZEGLĄD — ${mNamesLong[TODAY.getMonth()].toUpperCase()} ${TODAY.getFullYear()}`));
   el.appendChild(h("p",{style:{color:"var(--dim)",margin:"0 0 14px",fontSize:12}},`${state.clients.filter(c=>c.status==="aktywny").length} aktywnych klientów`));
   const grid=h("div",{className:"kpi-grid"});
   grid.appendChild(kpi("Przychody (opłacone)",fmt(totR),`${paid.length} faktur`,"#00C851","💰"));
@@ -749,7 +750,8 @@ function renderAnalytics(){
   const cw=h("div",{className:"card",style:{marginBottom:13}});
   cw.appendChild(h("h3",{style:{margin:"0 0 14px",fontSize:11,color:"var(--dim)",textTransform:"uppercase",letterSpacing:"1.5px",fontWeight:700}},"Przychody vs zysk netto"));
   const canvas=document.createElement("canvas");canvas.width=700;canvas.height=180;canvas.style.width="100%";canvas.style.height="auto";cw.appendChild(canvas);el.appendChild(cw);
-  const chartData=[...HIST.map(m=>({...m,net:m.revenue-m.costs})),{month:"Maj",revenue:totR,costs:totC,net}];
+  const mnShort=["Sty","Lut","Mar","Kwi","Maj","Cze","Lip","Sie","Wrz","Paź","Lis","Gru"];
+  const chartData=[...HIST.map(m=>({...m,net:m.revenue-m.costs})),{month:mnShort[TODAY.getMonth()],revenue:totR,costs:totC,net}];
   setTimeout(()=>{
     const ctx=canvas.getContext("2d");const W=700,H=180,PAD=40,BW=40,GAP=60;const maxV=Math.max(...chartData.map(d=>d.revenue))*1.1;
     ctx.clearRect(0,0,W,H);
@@ -807,17 +809,104 @@ function renderAnalytics(){
   const catCard=h("div",{className:"card"});
   catCard.appendChild(h("h3",{style:{margin:"0 0 11px",fontSize:11,color:"var(--dim)",textTransform:"uppercase",letterSpacing:"1.5px",fontWeight:700}},"Koszty wg kategorii"));
   const{totC:tc}=calcs();
+  const catColMap={tech:"#4DA6FF",marketing:"#E60000",uslugi:"#00C851",inne:"#888"};
+  const catLabelMap={tech:"💻 Tech",marketing:"📣 Marketing",uslugi:"🤝 Usługi",inne:"📦 Inne"};
   ["tech","marketing","uslugi","inne"].forEach(cat=>{
-    const t=state.costs.filter(c=>c.category===cat).reduce((s,c)=>s+c.amount,0);const p=tc?Math.round((t/tc)*100):0;const col={tech:"#4DA6FF",marketing:"#E60000",uslugi:"#00C851",inne:"#888"}[cat];
-    const d=h("div",{style:{marginBottom:10}});const r=h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:3}});
-    r.appendChild(h("span",{style:{fontSize:13,textTransform:"capitalize",color:"var(--text)"}},cat));r.appendChild(h("span",{style:{fontSize:13,fontWeight:700,color:col}},fmt(t)," ",h("span",{style:{color:"var(--dim)",fontWeight:400}},`(${p}%)`)));
-    d.appendChild(r);const bar=h("div",{style:{height:4,background:"var(--bg3)",borderRadius:2}});bar.appendChild(h("div",{style:{height:"100%",background:col,borderRadius:2,width:`${p}%`}}));d.appendChild(bar);catCard.appendChild(d);
+    const catItems=state.costs.filter(c=>c.category===cat);
+    const t=catItems.reduce((s,c)=>s+c.amount,0);
+    if(!t)return;
+    const p=tc?Math.round((t/tc)*100):0;const col=catColMap[cat];
+    const d=h("div",{style:{marginBottom:12}});
+    const r=h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:3}});
+    r.appendChild(h("span",{style:{fontSize:13,fontWeight:700,color:"var(--text)"}},catLabelMap[cat]));
+    r.appendChild(h("span",{style:{fontSize:13,fontWeight:700,color:col}},fmt(t)," ",h("span",{style:{color:"var(--dim)",fontWeight:400}},`(${p}%)`)));
+    d.appendChild(r);
+    const bar=h("div",{style:{height:4,background:"var(--bg3)",borderRadius:2,marginBottom:6}});
+    bar.appendChild(h("div",{style:{height:"100%",background:col,borderRadius:2,width:`${p}%`}}));
+    d.appendChild(bar);
+    catItems.forEach(c=>{
+      const isPaid=c.paid!==false;
+      const ir=h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"2px 0 2px 8px",borderLeft:`2px solid ${col}44`,marginBottom:2}});
+      ir.appendChild(h("span",{style:{fontSize:11,color:"var(--muted)",flex:1,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",marginRight:6}},c.name+(c.recurring?" 🔄":"")));
+      ir.appendChild(h("div",{style:{display:"flex",alignItems:"center",gap:5,flexShrink:0}},
+        h("span",{style:{fontSize:11,fontWeight:700,fontFamily:"'Bebas Neue',sans-serif",color:isPaid?"#E60000":"#FFB300"}},fmt(c.amount)),
+        h("span",{style:{fontSize:9,padding:"1px 4px",borderRadius:3,background:isPaid?"#001a0a":"#1a1000",color:isPaid?"#00C851":"#FFB300",fontWeight:700}},isPaid?"✓":"⏳")
+      ));
+      d.appendChild(ir);
+    });
+    catCard.appendChild(d);
   });
   catCard.appendChild(h("div",{style:{marginTop:12,padding:11,background:"var(--bg0)",borderRadius:8,display:"flex",justifyContent:"space-between",alignItems:"center"}},
     h("span",{style:{fontSize:11,color:"var(--dim)",textTransform:"uppercase",letterSpacing:1}},"Marża netto"),
     h("span",{style:{fontSize:22,fontWeight:800,color:"#00C851",fontFamily:"'Bebas Neue',sans-serif"}},`${totR?Math.round((net/totR)*100):0}%`)
   ));
-  two.appendChild(catCard);el.appendChild(two);return el;
+  two.appendChild(catCard);el.appendChild(two);
+
+  // ── Szczegółowa analiza kosztów ──────────────────────────────────────────
+  const costAn=h("div",{className:"card",style:{marginTop:14}});
+  costAn.appendChild(h("h3",{style:{margin:"0 0 14px",fontSize:11,color:"var(--dim)",textTransform:"uppercase",letterSpacing:"1.5px",fontWeight:700}},"🔍 Szczegółowa analiza kosztów"));
+  const totalCosts=state.costs.reduce((s,c)=>s+c.amount,0);
+  const paidCosts=state.costs.filter(c=>c.paid!==false).reduce((s,c)=>s+c.amount,0);
+  const unpaidCosts=state.costs.filter(c=>c.paid===false).reduce((s,c)=>s+c.amount,0);
+  const recurringCosts=state.costs.filter(c=>c.recurring).reduce((s,c)=>s+c.amount,0);
+  const oneTimeCosts=state.costs.filter(c=>!c.recurring).reduce((s,c)=>s+c.amount,0);
+  const paidCnt=state.costs.filter(c=>c.paid!==false).length;
+  const unpaidCnt=state.costs.filter(c=>c.paid===false).length;
+  const kg2=h("div",{className:"kpi-grid",style:{marginBottom:14}});
+  kg2.appendChild(kpi("Opłacone",fmt(paidCosts),`${paidCnt} poz. · ${totalCosts?Math.round(paidCosts/totalCosts*100):0}%`,"#00C851","✅"));
+  kg2.appendChild(kpi("Do zapłaty",fmt(unpaidCosts),`${unpaidCnt} poz.`,"#FFB300","⏳"));
+  kg2.appendChild(kpi("Cykliczne /mies.",fmt(recurringCosts),`${state.costs.filter(c=>c.recurring).length} poz.`,"#4DA6FF","🔄"));
+  kg2.appendChild(kpi("Jednorazowe",fmt(oneTimeCosts),`${state.costs.filter(c=>!c.recurring).length} poz.`,"#BB86FC","📌"));
+  costAn.appendChild(kg2);
+  if(totalCosts>0){
+    const paidPct=paidCosts/totalCosts*100;
+    const pvuSec=h("div",{style:{marginBottom:14}});
+    pvuSec.appendChild(h("div",{style:{fontSize:11,color:"var(--dim)",marginBottom:6,textTransform:"uppercase",letterSpacing:1,fontWeight:600}},"Stopień opłacenia kosztów"));
+    const pvuTrack=h("div",{style:{height:14,background:"var(--bg3)",borderRadius:7,overflow:"hidden",display:"flex"}});
+    pvuTrack.appendChild(h("div",{style:{width:`${paidPct}%`,background:"#00C851",height:"100%"}}));
+    pvuTrack.appendChild(h("div",{style:{flex:1,background:"#FFB300",height:"100%"}}));
+    pvuSec.appendChild(pvuTrack);
+    const pvuLbl=h("div",{style:{display:"flex",justifyContent:"space-between",marginTop:4,fontSize:11}});
+    pvuLbl.appendChild(h("span",{style:{color:"#00C851",fontWeight:700}},`✓ Opłacone: ${fmt(paidCosts)} (${Math.round(paidPct)}%)`));
+    pvuLbl.appendChild(h("span",{style:{color:"#FFB300",fontWeight:700}},`⏳ Czeka: ${fmt(unpaidCosts)} (${Math.round(100-paidPct)}%)`));
+    pvuSec.appendChild(pvuLbl);
+    costAn.appendChild(pvuSec);
+    const rPct=totalCosts?recurringCosts/totalCosts*100:0;
+    const recSec=h("div",{style:{marginBottom:14}});
+    recSec.appendChild(h("div",{style:{fontSize:11,color:"var(--dim)",marginBottom:6,textTransform:"uppercase",letterSpacing:1,fontWeight:600}},"Cykliczne vs jednorazowe"));
+    const rTrack=h("div",{style:{height:14,background:"var(--bg3)",borderRadius:7,overflow:"hidden",display:"flex"}});
+    rTrack.appendChild(h("div",{style:{width:`${rPct}%`,background:"#4DA6FF",height:"100%"}}));
+    rTrack.appendChild(h("div",{style:{flex:1,background:"#BB86FC",height:"100%"}}));
+    recSec.appendChild(rTrack);
+    const rLbl=h("div",{style:{display:"flex",justifyContent:"space-between",marginTop:4,fontSize:11}});
+    rLbl.appendChild(h("span",{style:{color:"#4DA6FF",fontWeight:700}},`🔄 Cykliczne: ${fmt(recurringCosts)} (${Math.round(rPct)}%)`));
+    rLbl.appendChild(h("span",{style:{color:"#BB86FC",fontWeight:700}},`📌 Jednorazowe: ${fmt(oneTimeCosts)} (${Math.round(100-rPct)}%)`));
+    recSec.appendChild(rLbl);
+    costAn.appendChild(recSec);
+  }
+  costAn.appendChild(h("div",{style:{fontSize:11,color:"var(--dim)",marginBottom:8,textTransform:"uppercase",letterSpacing:1,fontWeight:600,borderTop:"1px solid var(--bg3)",paddingTop:12}},"Największe pozycje kosztowe"));
+  const topCosts=[...state.costs].sort((a,b)=>b.amount-a.amount).slice(0,5);
+  topCosts.forEach((c,i)=>{
+    const isPaid=c.paid!==false;
+    const pct2=totalCosts?Math.round(c.amount/totalCosts*100):0;
+    const col2=catColMap[c.category]||"#888";
+    const rowC=h("div",{style:{display:"flex",alignItems:"center",gap:10,padding:"8px 0",borderBottom:"1px solid var(--bg3)"}});
+    rowC.appendChild(h("span",{style:{fontSize:11,color:i===0?"#E60000":"var(--dim)",fontWeight:800,width:22,textAlign:"center",flexShrink:0}},i===0?"🥇":`#${i+1}`));
+    const left2=h("div",{style:{flex:1,minWidth:0}});
+    left2.appendChild(h("div",{style:{fontSize:13,fontWeight:600,color:"var(--text)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}},c.name+(c.recurring?" 🔄":"")));
+    left2.appendChild(h("div",{style:{fontSize:11,marginTop:1,display:"flex",gap:6}},
+      h("span",{style:{color:col2,fontWeight:700}},c.category.toUpperCase()),
+      c.date?h("span",{style:{color:"var(--dim)"}},fmtDate(c.date)):null
+    ));
+    rowC.appendChild(left2);
+    rowC.appendChild(h("div",{style:{textAlign:"right",flexShrink:0}},
+      h("div",{style:{fontWeight:800,fontFamily:"'Bebas Neue',sans-serif",fontSize:15,color:isPaid?"#E60000":"#FFB300"}},fmt(c.amount)),
+      h("div",{style:{fontSize:10,color:"var(--dim)"}},`${pct2}% kosztów · `,h("span",{style:{color:isPaid?"#00C851":"#FFB300",fontWeight:700}},isPaid?"opłacony":"⏳ do zapłaty"))
+    ));
+    costAn.appendChild(rowC);
+  });
+  el.appendChild(costAn);
+  return el;
 }
 
 // ── KALENDARZ ────────────────────────────────────────────────────────────
